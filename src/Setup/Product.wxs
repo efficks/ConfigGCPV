@@ -10,11 +10,11 @@
 	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
 	<?endif ?>
 
-	<Product Id="*" Name="GCPVConfig $(var.bitness)" Language="3084" Codepage="Windows-1252" Version="1.0.0.0" Manufacturer="François-Xavier Choinière" UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D">
+	<Product Id="*" Name="GCPVConfig $(var.bitness)" Language="3084" Codepage="Windows-1252" Version="!(bind.FileVersion.GCPVConfigExe)" Manufacturer="François-Xavier Choinière" UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate />
+		<MediaTemplate  EmbedCab="yes"/>
 
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
