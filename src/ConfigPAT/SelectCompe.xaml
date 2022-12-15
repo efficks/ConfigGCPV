@@ -1,0 +1,30 @@
+﻿<Window x:Class="ConfigPat.SelectCompe"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConfigPat"
+        mc:Ignorable="d"
+        Title="Sélecton de la compétition" Height="175" Width="245">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" Text="Dans quelle compétition souhaitez-vous importer les patineurs?" Margin="3,3,3,3"/>
+                <ListBox x:Name="list_competitions" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="3,3,3,3" SelectionChanged="list_competitions_SelectionChanged"/>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="btn_ok" Content="Ok" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Top" Margin="0,5,5,5" IsDefault="True" Click="btn_ok_Click" IsEnabled="False"/>
+                    <Button x:Name="btn_annuler" Content="Annuler" VerticalAlignment="Center" HorizontalAlignment="Center" IsCancel="True" Click="btn_annuler_Click"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Window>

@@ -1,0 +1,52 @@
+﻿<Window x:Class="ConfigPat.ConflitWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConfigPat"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="245" Width="513">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" >
+            <Button x:Name="btnInscription" Content="Garder l'inscription" VerticalAlignment="Center" Margin="4,0,3,0" Click="btnInscription_Click"/>
+            <Button x:Name="btnPat" Content="Garder l'info du fichier PAT" VerticalAlignment="Center" Margin="4,0,3,0" Click="btnPat_Click"/>
+            <Button x:Name="btnStop" Content="Arrêter l'importation" VerticalAlignment="Center" Margin="4,0,3,0" Click="btnStop_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Row="0">
+            <TextBlock TextWrapping="Wrap" Text="Conflit entre l'information d'un patineur dans l'inscription et dans le fichier PAT. Quelle information souhaitez-vous garder?" Margin="5,5,5,5"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Column="1" Grid.ColumnSpan="2" Stroke="Black" HorizontalAlignment="Left" Width="1" Margin="0,5,0,5"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Information dans l'inscription" FontWeight="Bold"/>
+                <Label x:Name="lbl_infoInscription" Content="Label" Grid.Row="1" Margin="15,0,0,0"/>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Information du fichier PAT" FontWeight="Bold"/>
+                <Label x:Name="lbl_infoPAT" Content="Label" Grid.Row="1" Margin="15,0,0,0"/>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Window>
