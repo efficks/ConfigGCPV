@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Directory Id="dirA5DBC4604284227206F7D2065CE93804" Name="net6.0-windows">
+                <Component Id="cmp473AF48BD496AEA5332BF7AA3854C68D" Guid="*">
+                    <File Id="filABD5D2A0DD77208E8F46F8D7689CE82F" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\AgeCalculator.dll" />
+                </Component>
+                <Component Id="cmp3D8B32BC969FD48D23AA8611FEE1C95D" Guid="*">
+                    <File Id="filBA8E37A1ED2F6DA0AFB79D409068C53E" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\ExcelDataReader.dll" />
+                </Component>
+                <Component Id="cmp801E38C3FCAB2FEC56BEF4986617FCF2" Guid="*">
+                    <File Id="fil99DEA4A385D78AB34AB95E5111FCB057" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.deps.json" />
+                </Component>
+                <Component Id="cmp8205F70A50E4D4D34097B4A502F37F43" Guid="*">
+                    <File Id="filCDFCF0C6A44EADEDCD46630D37B48927" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.dll" />
+                </Component>
+                <Component Id="cmp28C4ABE928C38BCD4C31BE5DFF547527" Guid="*">
+                    <File Id="fil4487EF18A37B5389488463589FAC976C" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.exe" />
+                </Component>
+                <Component Id="cmpA8490760E2517BC7B7FCEB7B61F75C66" Guid="*">
+                    <File Id="fil78365EED94C52587D45E3CC3DD37A9AC" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.pdb" />
+                </Component>
+                <Component Id="cmp3B7BD7023D087EEABE799B95A6A654AD" Guid="*">
+                    <File Id="filC942D959B24BD65B49CEB0E64B8BCF9D" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.runtimeconfig.json" />
+                </Component>
+                <Component Id="cmpB22175C01CE3888B0A2EE66177F0BECE" Guid="*">
+                    <File Id="fil7751F5918D3829E2C4B6CD85E8948DF2" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\ICSharpCode.AvalonEdit.dll" />
+                </Component>
+                <Component Id="cmp921980CAFD18A14A7AAC3E8429E47791" Guid="*">
+                    <File Id="fil15725A2F96B0A6EC50D0294A0E1D55E0" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\MdXaml.dll" />
+                </Component>
+                <Component Id="cmpDF3470C1BF7C78F2CA9D4E294CF80A1B" Guid="*">
+                    <File Id="fil0A34C94AFC22C780915F91934576644A" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\MdXaml.Plugins.dll" />
+                </Component>
+                <Component Id="cmpE5F821DC686F2A61B0F16FFE183501DB" Guid="*">
+                    <File Id="fil08D8E95205A263A3B8649D4925D8AAC0" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\Microsoft.Win32.SystemEvents.dll" />
+                </Component>
+                <Component Id="cmp959528F2EF9FC7105910B524BD56C7F4" Guid="*">
+                    <File Id="filBD5E9FF58F826B4166528E81481E3A98" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Configuration.ConfigurationManager.dll" />
+                </Component>
+                <Component Id="cmp12CA372B2DDD2016C0B3EEAC8CDAA816" Guid="*">
+                    <File Id="filE47C3A9891C8DA63E1899D94AEF74A3D" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Data.OleDb.dll" />
+                </Component>
+                <Component Id="cmp9F0E59AFE711B0859AAE439984700E0C" Guid="*">
+                    <File Id="fil6437939B8FF3728FF2EA88BFDDB2DC96" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Diagnostics.PerformanceCounter.dll" />
+                </Component>
+                <Component Id="cmp493937D2CE627D77CAD09408E7747D13" Guid="*">
+                    <File Id="fil7D3DD9F95372A0E2AF9874DFED13078D" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Drawing.Common.dll" />
+                </Component>
+                <Component Id="cmp3AC0B1D96501B3C18282F183C6477241" Guid="*">
+                    <File Id="fil1BBCC425F0B4F4EA69ADD3377012AFAC" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Security.Cryptography.ProtectedData.dll" />
+                </Component>
+                <Component Id="cmpCF818761EEF4AE9034E82088196E33C8" Guid="*">
+                    <File Id="fil7CEDAACD90543BDD66D82C6CF89EFC66" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Security.Permissions.dll" />
+                </Component>
+                <Component Id="cmp920ADCE8485FA91B422D84110A15D9C1" Guid="*">
+                    <File Id="fil8EDDBBFB0471DDCEAAE8027973DED20B" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Text.Encoding.CodePages.dll" />
+                </Component>
+                <Component Id="cmpDF8C6130DE5E20F20955EC0E2CEE663F" Guid="*">
+                    <File Id="fil147D979D44456FE0555D6DE71A97A857" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Windows.Extensions.dll" />
+                </Component>
+                <Directory Id="dirD844DE3E5747AC16E0DA19AADAAAED1B" Name="runtimes">
+                    <Directory Id="dir9CA543C2F3910D99ABD57F0E3D3CDDF1" Name="win">
+                        <Directory Id="dirFBBF4E541AC50E5EBDBC71BF2C097857" Name="lib">
+                            <Directory Id="dirED87F5993DB3A5D5FB8D7F1C46D6A0C0" Name="net6.0">
+                                <Component Id="cmpD8F3AA2EDA6774E9A34D68F133DCD429" Guid="*">
+                                    <File Id="fil86251BD4D99DF84FDDD7CB12E618C7FD" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll" />
+                                </Component>
+                                <Component Id="cmp8CE5CE5556FACDDD3149920C0347DC12" Guid="*">
+                                    <File Id="fil471413197C5BDF8548622372FD8B222A" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\System.Data.OleDb.dll" />
+                                </Component>
+                                <Component Id="cmp7538DA6496A33A006299FBD24A383566" Guid="*">
+                                    <File Id="filE1026F27D7AD81DA7EAD4EBF40CE9E62" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\System.Diagnostics.PerformanceCounter.dll" />
+                                </Component>
+                                <Component Id="cmpF55D5F7C5652D5DB649A58E5C0C90D1D" Guid="*">
+                                    <File Id="filF3559C5BA4CFEE7E5CD7EB410C3C2412" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\System.Drawing.Common.dll" />
+                                </Component>
+                                <Component Id="cmp0F9D85B1126CB483F10F038E9004D81F" Guid="*">
+                                    <File Id="filA8A25A3FF479D0EB4A03FB44ED91A1D2" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll" />
+                                </Component>
+                                <Component Id="cmp2294DA7D60C41DD13BE07F854ED05BB0" Guid="*">
+                                    <File Id="filED1E3215B35632E8668249818CD638B9" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll" />
+                                </Component>
+                                <Component Id="cmp955FA029637B91C6D305588C57BAF5FC" Guid="*">
+                                    <File Id="fil0C1538D8A436BB0E14AF6D2C70EF3F5D" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\runtimes\win\lib\net6.0\System.Windows.Extensions.dll" />
+                                </Component>
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="HeatGenerated">
+            <ComponentRef Id="cmp473AF48BD496AEA5332BF7AA3854C68D" />
+            <ComponentRef Id="cmp3D8B32BC969FD48D23AA8611FEE1C95D" />
+            <ComponentRef Id="cmp801E38C3FCAB2FEC56BEF4986617FCF2" />
+            <ComponentRef Id="cmp8205F70A50E4D4D34097B4A502F37F43" />
+            <ComponentRef Id="cmp28C4ABE928C38BCD4C31BE5DFF547527" />
+            <ComponentRef Id="cmpA8490760E2517BC7B7FCEB7B61F75C66" />
+            <ComponentRef Id="cmp3B7BD7023D087EEABE799B95A6A654AD" />
+            <ComponentRef Id="cmpB22175C01CE3888B0A2EE66177F0BECE" />
+            <ComponentRef Id="cmp921980CAFD18A14A7AAC3E8429E47791" />
+            <ComponentRef Id="cmpDF3470C1BF7C78F2CA9D4E294CF80A1B" />
+            <ComponentRef Id="cmpE5F821DC686F2A61B0F16FFE183501DB" />
+            <ComponentRef Id="cmp959528F2EF9FC7105910B524BD56C7F4" />
+            <ComponentRef Id="cmp12CA372B2DDD2016C0B3EEAC8CDAA816" />
+            <ComponentRef Id="cmp9F0E59AFE711B0859AAE439984700E0C" />
+            <ComponentRef Id="cmp493937D2CE627D77CAD09408E7747D13" />
+            <ComponentRef Id="cmp3AC0B1D96501B3C18282F183C6477241" />
+            <ComponentRef Id="cmpCF818761EEF4AE9034E82088196E33C8" />
+            <ComponentRef Id="cmp920ADCE8485FA91B422D84110A15D9C1" />
+            <ComponentRef Id="cmpDF8C6130DE5E20F20955EC0E2CEE663F" />
+            <ComponentRef Id="cmpD8F3AA2EDA6774E9A34D68F133DCD429" />
+            <ComponentRef Id="cmp8CE5CE5556FACDDD3149920C0347DC12" />
+            <ComponentRef Id="cmp7538DA6496A33A006299FBD24A383566" />
+            <ComponentRef Id="cmpF55D5F7C5652D5DB649A58E5C0C90D1D" />
+            <ComponentRef Id="cmp0F9D85B1126CB483F10F038E9004D81F" />
+            <ComponentRef Id="cmp2294DA7D60C41DD13BE07F854ED05BB0" />
+            <ComponentRef Id="cmp955FA029637B91C6D305588C57BAF5FC" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

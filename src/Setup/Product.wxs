@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<?if $(var.Platform) = x64 ?>
+	<?define bitness = "(64 bit)" ?>
+	<?define Win64 = "yes" ?>
+	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+	<?else ?>
+	<?define bitness = "(32 bit)" ?>
+	<?define Win64 = "no" ?>
+	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+	<?endif ?>
+
+	<Product Id="*" Name="GCPVConfig $(var.bitness)" Language="3084" Codepage="Windows-1252" Version="1.0.0.0" Manufacturer="François-Xavier Choinière" UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+
+		<Feature Id="ProductFeature" Title="Setup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentRef Id="configShortcut" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="LocalAppDataFolder" Name="AppData">
+				<Directory Id="INSTALLFOLDER" Name="GCPVConfig" />
+			</Directory>
+			<Directory Id="ProgramMenuFolder"/>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<Component Id="comExe" Win64="$(var.Win64)" Guid="EB9C1CF0-4A3F-4688-89BB-5CD08422F2CE">
+				<File Id="GCPVConfigExe" Name="GCPVConfig.exe" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="GCPVConfigDll" Name="GCPVConfig.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="License" Name="LICENSE" Source="$(var.SolutionDir)LICENSE" />
+
+				<File Id="AgeCalculator" Name="AgeCalculator.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="ExcelDataReader" Name="ExcelDataReader.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="ICSharpCode.AvalonEdit" Name="ICSharpCode.AvalonEdit.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="MdXaml" Name="MdXaml.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="MdXaml.Plugins" Name="MdXaml.Plugins.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="Microsoft.Win32.SystemEvents" Name="Microsoft.Win32.SystemEvents.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Configuration.ConfigurationManager" Name="System.Configuration.ConfigurationManager.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Data.OleDb" Name="System.Data.OleDb.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Diagnostics.PerformanceCounter" Name="System.Diagnostics.PerformanceCounter.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Drawing.Common" Name="System.Drawing.Common.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Security.Cryptography.ProtectedData" Name="System.Security.Cryptography.ProtectedData.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Security.Permissions" Name="System.Security.Permissions.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Text.Encoding.CodePages" Name="System.Text.Encoding.CodePages.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="System.Windows.Extensions" Name="System.Windows.Extensions.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				
+				<RemoveFolder Id="CleanUpShortCut" Directory="INSTALLFOLDER" On="uninstall"/>
+				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedexe" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</ComponentGroup>
+		
+		<DirectoryRef Id="ProgramMenuFolder">
+			<Component Id="configShortcut" Guid="">
+				<Shortcut Id="ApplicationStartMenuShortcut"
+							Name="GCPV Config"
+							Description="GCPV Config"
+							Target="[#GCPVConfigExe]"
+							WorkingDirectory="ProgramMenuFolder"/>
+				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedshort" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+</Wix>
