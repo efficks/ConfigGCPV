@@ -392,6 +392,10 @@ namespace ConfigPAT
         private static int GetAge(DateOnly dob)
         {
             var FIRST_JULY = new DateTime(DateTime.Now.Year, 06, 30,0,0,0);
+            if(FIRST_JULY > DateTime.Now)
+            {
+                FIRST_JULY = new DateTime(DateTime.Now.Year-1, 06, 30, 0, 0, 0);
+            }
             var age = new AgeCalculator.Age(dob.ToDateTime(TimeOnly.Parse("00:00:00")), FIRST_JULY);
             return age.Years;
         }

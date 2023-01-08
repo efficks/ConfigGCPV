@@ -143,6 +143,7 @@ namespace ConfigPat
 
                 ProgressMessage?.Report("Correction des catégories");
                 pat.FixCategories();
+                pat.FixPatineurNom();
 
                 try
                 {
