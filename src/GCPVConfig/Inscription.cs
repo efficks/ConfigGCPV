@@ -87,7 +87,12 @@ namespace ConfigPAT
 
                     while (reader.Read())
                     {
-                        string? club_abvr = ExtractClubAbreviation(reader.GetString(headers["Affiliates"]).Trim());
+                        string? aff = reader.GetString(headers["Affiliates"]);
+                        string? club_abvr = null;
+                        if (aff != null)
+                        {
+                            club_abvr = ExtractClubAbreviation(reader.GetString(headers["Affiliates"]).Trim());
+                        }
 
                         var numberType = reader.GetFieldType(headers["Membership Numbers"]);
                         string memNumber = "";
@@ -114,7 +119,7 @@ namespace ConfigPAT
                         }
                         else
                         {
-                            //TODO: MEssage d'erreur et arrêt
+                            throw new Exception("Un patineur n'a pas de club affilié. Corrigez avant de continuer");
                         }
                     }
                 }
