@@ -464,7 +464,7 @@ namespace ConfigPAT
 
                 int nocat = GetCategoryByDOB(inscription.BirthDate, inscription.Sex);
                 {
-                        var cmd = new OleDbCommand("INSERT INTO TPatineurs (Prenom, Nom, [Date de naissance], Sexe, Division, NoCategorie, NoClub, Classement, CategCalc, CodePat, Classement1000, Classement1500, ClassementGeneral, Classement2000, Classement2500) VALUES (@prenom, @nom, @dob, @sexe, 'Initiation', @nocat, @noclub, 999, 1, @codepat, 999, 999, 999, 999, 999);", conn);
+                        var cmd = new OleDbCommand("INSERT INTO TPatineurs (Prenom, Nom, [Date de naissance], Sexe, Division, NoCategorie, NoClub, Classement, CategCalc, CodePat, Classement1000, Classement1500, ClassementGeneral, Classement2000, Classement2500) VALUES (@prenom, @nom, @dob, @sexe, 'Récréation', @nocat, @noclub, 999, 1, @codepat, 999, 999, 999, 999, 999);", conn);
                     cmd.Parameters.AddRange(new OleDbParameter[]
                     {
                         
@@ -553,7 +553,7 @@ namespace ConfigPAT
             {
                 conn.Open();
 
-                var cmd = new OleDbCommand("INSERT INTO TPatineur_compe (NoCompetition, NoPatineur, Division, NoCategorie, NoClub, Rang, Groupe, Si_Regroup_Classement) VALUES (@nocompe, @nopat, 'Initiation', @nocat, @noclub, 0, 'Pas dans un groupe', 1)", conn);
+                var cmd = new OleDbCommand("INSERT INTO TPatineur_compe (NoCompetition, NoPatineur, Division, NoCategorie, NoClub, Rang, Groupe, Si_Regroup_Classement) VALUES (@nocompe, @nopat, 'Récréation', @nocat, @noclub, 0, 'Pas dans un groupe', 1)", conn);
 
                 cmd.Parameters.AddRange(new OleDbParameter[]
                 {
