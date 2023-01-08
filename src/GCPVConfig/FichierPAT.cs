@@ -27,6 +27,7 @@ using System.Data.OleDb;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Data;
@@ -309,6 +310,22 @@ namespace ConfigPAT
 
                 return patineur;
             }*/
+        }
+
+        private static Regex REGEX_PATINEUR_BAD_STARTS = new Regex(@"^(\d+)\s*(.+)$");
+        public void FixPatineurNom()
+        {
+            List<Patineur> patineurs = GetAllPatineurs();
+
+            foreach(var patineur in patineurs)
+            {
+                Match m = REGEX_PATINEUR_BAD_STARTS.Match(patineur.LastName);
+                if (m.Success)
+                {
+                    patineur.LastName = m.Groups[2].Value.Trim();
+                    patineur.Save();
+                }
+            }
         }
 
         public void FixCategories()
