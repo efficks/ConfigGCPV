@@ -25,37 +25,63 @@
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="LocalAppDataFolder" Name="AppData">
-				<Directory Id="INSTALLFOLDER" Name="GCPVConfig" />
+				<Directory Id="INSTALLFOLDER" Name="GCPVConfig">
+					<Directory Id="dirRuntime" Name="runtimes">
+						<Directory Id="dirwin" Name="win">
+							<Directory Id="dirlib" Name="lib">
+								<Directory Id="dirnet6" Name="net6.0" />
+							</Directory>
+						</Directory>
+					</Directory>
+				</Directory>
 			</Directory>
 			<Directory Id="ProgramMenuFolder"/>
 		</Directory>
 	</Fragment>
 
 	<Fragment>
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+		<ComponentGroup Id="ProductComponents" >
 			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<Component Id="comExe" Win64="$(var.Win64)" Guid="EB9C1CF0-4A3F-4688-89BB-5CD08422F2CE">
-				<File Id="GCPVConfigExe" Name="GCPVConfig.exe" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="GCPVConfigDll" Name="GCPVConfig.dll" Source="$(var.GCPVConfig.TargetPath)" />
+			<Component Id="comExe" Win64="$(var.Win64)" Guid="EB9C1CF0-4A3F-4688-89BB-5CD08422F2CE" Directory="INSTALLFOLDER">
+				<File Id="GCPVConfigExe" Name="GCPVConfig.exe" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.exe" />
+				<File Id="GCPVConfigDll" Name="GCPVConfig.dll" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.dll" />
+				<File Id="GCPVConfigdepsjson" Name="GCPVConfig.deps.json" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.deps.json" />
+				<File Id="GCPVConfigruntimeconfigjson" Name="GCPVConfig.runtimeconfig.json" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.runtimeconfig.json" />
 				<File Id="License" Name="LICENSE" Source="$(var.SolutionDir)LICENSE" />
 
-				<File Id="AgeCalculator" Name="AgeCalculator.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="ExcelDataReader" Name="ExcelDataReader.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="ICSharpCode.AvalonEdit" Name="ICSharpCode.AvalonEdit.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="MdXaml" Name="MdXaml.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="MdXaml.Plugins" Name="MdXaml.Plugins.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="Microsoft.Win32.SystemEvents" Name="Microsoft.Win32.SystemEvents.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Configuration.ConfigurationManager" Name="System.Configuration.ConfigurationManager.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Data.OleDb" Name="System.Data.OleDb.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Diagnostics.PerformanceCounter" Name="System.Diagnostics.PerformanceCounter.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Drawing.Common" Name="System.Drawing.Common.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Security.Cryptography.ProtectedData" Name="System.Security.Cryptography.ProtectedData.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Security.Permissions" Name="System.Security.Permissions.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Text.Encoding.CodePages" Name="System.Text.Encoding.CodePages.dll" Source="$(var.GCPVConfig.TargetPath)" />
-				<File Id="System.Windows.Extensions" Name="System.Windows.Extensions.dll" Source="$(var.GCPVConfig.TargetPath)" />
+				<File Id="AgeCalculator" Name="AgeCalculator.dll" Source="$(var.GCPVConfig.TargetDir)\AgeCalculator.dll" />
+				<File Id="ExcelDataReader" Name="ExcelDataReader.dll" Source="$(var.GCPVConfig.TargetDir)\ExcelDataReader.dll" />
+				<File Id="ICSharpCode.AvalonEdit" Name="ICSharpCode.AvalonEdit.dll" Source="$(var.GCPVConfig.TargetDir)\ICSharpCode.AvalonEdit.dll" />
+				<File Id="MdXaml" Name="MdXaml.dll" Source="$(var.GCPVConfig.TargetDir)\MdXaml.dll" />
+				<File Id="MdXaml.Plugins" Name="MdXaml.Plugins.dll" Source="$(var.GCPVConfig.TargetDir)\MdXaml.Plugins.dll" />
+				<File Id="Microsoft.Win32.SystemEvents" Name="Microsoft.Win32.SystemEvents.dll" Source="$(var.GCPVConfig.TargetDir)\Microsoft.Win32.SystemEvents.dll" />
+				<File Id="System.Configuration.ConfigurationManager" Name="System.Configuration.ConfigurationManager.dll" Source="$(var.GCPVConfig.TargetDir)\System.Configuration.ConfigurationManager.dll" />
+				<File Id="System.Data.OleDb" Name="System.Data.OleDb.dll" Source="$(var.GCPVConfig.TargetDir)\System.Data.OleDb.dll" />
+				<File Id="System.Diagnostics.PerformanceCounter" Name="System.Diagnostics.PerformanceCounter.dll" Source="$(var.GCPVConfig.TargetDir)\System.Diagnostics.PerformanceCounter.dll" />
+				<File Id="System.Drawing.Common" Name="System.Drawing.Common.dll" Source="$(var.GCPVConfig.TargetDir)\System.Drawing.Common.dll" />
+				<File Id="System.Security.Cryptography.ProtectedData" Name="System.Security.Cryptography.ProtectedData.dll" Source="$(var.GCPVConfig.TargetDir)\System.Security.Cryptography.ProtectedData.dll" />
+				<File Id="System.Security.Permissions" Name="System.Security.Permissions.dll" Source="$(var.GCPVConfig.TargetDir)\System.Security.Permissions.dll" />
+				<File Id="System.Text.Encoding.CodePages" Name="System.Text.Encoding.CodePages.dll" Source="$(var.GCPVConfig.TargetDir)\System.Text.Encoding.CodePages.dll" />
+				<File Id="System.Windows.Extensions" Name="System.Windows.Extensions.dll" Source="$(var.GCPVConfig.TargetDir)\System.Windows.Extensions.dll" />
 				
 				<RemoveFolder Id="CleanUpShortCut" Directory="INSTALLFOLDER" On="uninstall"/>
 				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedexe" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+
+			<Component Id="com_net6" Directory="dirnet6" Guid="527D2C90-F8DB-4201-B7A2-745AA278B6B4">
+				<File Id="fil86251BD4D99DF84FDDD7CB12E618C7FD" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll" />
+				<File Id="fil471413197C5BDF8548622372FD8B222A" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Data.OleDb.dll" />
+				<File Id="filE1026F27D7AD81DA7EAD4EBF40CE9E62" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Diagnostics.PerformanceCounter.dll" />
+				<File Id="filF3559C5BA4CFEE7E5CD7EB410C3C2412" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Drawing.Common.dll" />
+				<File Id="filA8A25A3FF479D0EB4A03FB44ED91A1D2" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll" />
+				<File Id="filED1E3215B35632E8668249818CD638B9" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll" />
+				<File Id="fil0C1538D8A436BB0E14AF6D2C70EF3F5D" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Windows.Extensions.dll" />
+				
+				<RemoveFolder Id="remove1" Directory="dirRuntime" On="uninstall"/>
+				<RemoveFolder Id="remove2" Directory="dirwin" On="uninstall"/>
+				<RemoveFolder Id="remove3" Directory="dirlib" On="uninstall"/>
+				<RemoveFolder Id="remove4" Directory="dirnet6" On="uninstall"/>
+				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedcn" Type="integer" Value="1" KeyPath="yes"/>
 			</Component>
 		</ComponentGroup>
 		
