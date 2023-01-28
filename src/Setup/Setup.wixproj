@@ -9,10 +9,9 @@
     <OutputName>GCPVConfig</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
-  <PropertyGroup>    
-  <DefineConstants>HarvestPath=..\GCPVConfig\bin\$(Platform)\$(Configuration)</DefineConstants>
-	  <RunWixToolsOutOfProc Condition=" '$(PROCESSOR_ARCHITECTURE)'!='x86' ">true</RunWixToolsOutOfProc>
-
+  <PropertyGroup>
+    <DefineConstants>HarvestPath=..\GCPVConfig\bin\$(Platform)\$(Configuration)</DefineConstants>
+    <RunWixToolsOutOfProc Condition=" '$(PROCESSOR_ARCHITECTURE)'!='x86' ">true</RunWixToolsOutOfProc>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
@@ -56,7 +55,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
-    <Compile Include="HeatGeneratedFileList.wxs" /> <!-- This is the Heat created one -->
+    <None Include="HeatGeneratedFileList.wxs" />
+    <!-- This is the Heat created one -->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GCPVConfig\GCPVConfig.csproj">
@@ -74,18 +74,8 @@
     <Error Text="The WiX Toolset v3.11 build tools must be installed to build this project. To download the WiX Toolset, see https://wixtoolset.org/releases/v3.11/stable" />
   </Target>
   <Target Name="BeforeBuild">
-  <HeatDirectory Directory="..\GCPVConfig\bin\$(Platform)\$(Configuration)" 
-	RunAsSeparateProcess="$(RunWixToolsOutOfProc)"
-    PreprocessorVariable="var.HarvestPath" 
-    OutputFile="HeatGeneratedFileList.wxs" 
-    ComponentGroupName="HeatGenerated" 
-    DirectoryRefId="INSTALLFOLDER" 
-    AutogenerateGuids="true" 
-    ToolPath="$(WixToolPath)" 
-    SuppressFragments="true" 
-    SuppressRegistry="true" 
-    SuppressRootDirectory="true" />  
-</Target>
+    <HeatDirectory Directory="..\GCPVConfig\bin\$(Platform)\$(Configuration)" RunAsSeparateProcess="$(RunWixToolsOutOfProc)" PreprocessorVariable="var.HarvestPath" OutputFile="HeatGeneratedFileList.wxs" ComponentGroupName="HeatGenerated" DirectoryRefId="INSTALLFOLDER" AutogenerateGuids="true" ToolPath="$(WixToolPath)" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" />
+  </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.

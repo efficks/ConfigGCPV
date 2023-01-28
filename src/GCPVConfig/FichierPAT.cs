@@ -17,6 +17,7 @@
 
     François-Xavier Choinière, fx@efficks.com
 */
+global using Console = System.Diagnostics.Debug;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,8 @@ using System.Transactions;
 using System.Windows.Data;
 using static ConfigPAT.FichierPAT;
 using static ConfigPAT.Inscription;
+
+using System.Diagnostics;
 
 namespace ConfigPAT
 {
@@ -206,18 +209,28 @@ namespace ConfigPAT
                 {
                     while (reader.Read())
                     {
-                        var patineur = new Patineur(
-                            reader.GetInt32(0),
-                            reader.GetString(1),
-                            reader.GetString(2),
-                            reader.GetString(4).ToLower() == "m" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
-                            DateOnly.FromDateTime(reader.GetDateTime(3)),
-                            reader.GetString(10),
-                            reader.GetString(11),
-                            reader.GetInt32(6),
-                            this
-                        );
-                        patineurs.Add(patineur);
+                        try
+                        {
+                            Console.WriteLine(reader.GetString(1));
+                            Console.WriteLine(reader.GetString(2));
+                            var patineur = new Patineur(
+                                reader.GetInt32(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetString(4).ToLower() == "m" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
+                                DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                reader.GetString(10),
+                                reader.GetString(11),
+                                reader.GetInt32(6),
+                                this
+                            );
+                            patineurs.Add(patineur);
+                        }
+                        catch(System.InvalidCastException)
+                        {
+                            continue;
+                        }
+                        
                     }
                 }
 
@@ -468,7 +481,7 @@ namespace ConfigPAT
 
                 int nocat = GetCategoryByDOB(inscription.BirthDate, inscription.Sex);
                 {
-                        var cmd = new OleDbCommand("INSERT INTO TPatineurs (Prenom, Nom, [Date de naissance], Sexe, Division, NoCategorie, NoClub, Classement, CategCalc, CodePat, Classement1000, Classement1500, ClassementGeneral, Classement2000, Classement2500) VALUES (@prenom, @nom, @dob, @sexe, 'Récréation', @nocat, @noclub, 999, 1, @codepat, 999, 999, 999, 999, 999);", conn);
+                        var cmd = new OleDbCommand("INSERT INTO TPatineurs (Prenom, Nom, [Date de naissance], Sexe, Division, NoCategorie, NoClub, Classement, CategCalc, CodePat, Classement1000, Classement1500, ClassementGeneral, Classement2000, Classement2500) VALUES (@prenom, @nom, @dob, @sexe, 'Initiation', @nocat, @noclub, 999, 1, @codepat, 999, 999, 999, 999, 999);", conn);
                     cmd.Parameters.AddRange(new OleDbParameter[]
                     {
                         
@@ -497,8 +510,17 @@ namespace ConfigPAT
         {
             foreach(var patineur in patineurs.Values)
             {
-                var newcat = GetCategoryByDOB(patineur.BirthDate, patineur.Sex);
-                if (patineur.NoCategory != newcat)
+                int newcat = -1;
+                try
+                {
+                    newcat = GetCategoryByDOB(patineur.BirthDate, patineur.Sex);
+                }
+                catch(Exception)
+                {
+                    newcat = -1;
+                }
+
+                if (newcat >= 0 && patineur.NoCategory != newcat)
                 {
                     patineur.NoCategory = newcat;
                     patineur.Save();
@@ -557,7 +579,7 @@ namespace ConfigPAT
             {
                 conn.Open();
 
-                var cmd = new OleDbCommand("INSERT INTO TPatineur_compe (NoCompetition, NoPatineur, Division, NoCategorie, NoClub, Rang, Groupe, Si_Regroup_Classement) VALUES (@nocompe, @nopat, 'Récréation', @nocat, @noclub, 0, 'Pas dans un groupe', 1)", conn);
+                var cmd = new OleDbCommand("INSERT INTO TPatineur_compe (NoCompetition, NoPatineur, Division, NoCategorie, NoClub, Rang, Groupe, Si_Regroup_Classement) VALUES (@nocompe, @nopat, 'Initiation', @nocat, @noclub, 0, 'Pas dans un groupe', 1)", conn);
 
                 cmd.Parameters.AddRange(new OleDbParameter[]
                 {
