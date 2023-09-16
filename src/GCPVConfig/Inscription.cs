@@ -87,6 +87,12 @@ namespace ConfigPAT
 
                     while (reader.Read())
                     {
+                        string? nom = reader.GetString(headers["First Name"]);
+                        if(nom == null)
+                        {
+                            continue;
+                        }
+
                         string? aff = reader.GetString(headers["Affiliates"]);
                         string? club_abvr = null;
                         if (aff != null)
