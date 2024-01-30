@@ -17,6 +17,6 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Build
-        run: dotnet build --configuration Release --no-restore -p EnableWindowsTargeting=true
+        run: dotnet build --configuration Release -p EnableWindowsTargeting=true
       - name: Test
         run: dotnet test --no-restore --verbosity normal
