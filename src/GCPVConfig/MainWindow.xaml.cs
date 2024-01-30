@@ -21,6 +21,7 @@ using ConfigPAT;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -38,18 +39,53 @@ using System.Windows.Xps;
 
 namespace ConfigPat
 {
+    public class CourseTemps
+    {
+        public string Distance { get; set; }
+        public string Secondes { get; set; }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private delegate void NoArgDelegate(IProgress<string> progress);
+        private ObservableCollection<CourseTemps> EmployeeCollection = new ObservableCollection<CourseTemps>();
 
         public MainWindow()
         {
             InitializeComponent();
             ValidImportation();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            //grid_temps.DataContext = EmployeeCollection;
+            this.Title = "GCPV Config version " + Common.version();
+        }
+
+        private void DG1_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            string headername = e.Column.Header.ToString();
+
+            //Cancel the column you don't want to generate
+            if (headername == "MiddleName")
+            {
+                e.Cancel = true;
+            }
+
+            //update column details when generating
+            if (headername == "FirstName")
+            {
+                e.Column.Header = "First Name";
+            }
+            else if (headername == "LastName")
+            {
+                e.Column.Header = "Last Name";
+            }
+            else if (headername == "EmailAddress")
+            {
+                e.Column.Header = "Email";
+            }
         }
 
         private void btn_openInscription_Click(object sender, RoutedEventArgs e)
@@ -171,6 +207,11 @@ namespace ConfigPat
         {
             AideDialogue ad = new AideDialogue();
             ad.ShowDialog();
+        }
+
+        private void btn_launchMinute_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -326,16 +326,29 @@ namespace ConfigPAT
         }
 
         private static Regex REGEX_PATINEUR_BAD_STARTS = new Regex(@"^(\d+)\s*(.+)$");
+        private static Regex REGEX_PATINEUR_END_NUMBER = new Regex(@"^(.+)\s+(\(\d+\))$");
         public void FixPatineurNom()
         {
             List<Patineur> patineurs = GetAllPatineurs();
 
             foreach(var patineur in patineurs)
             {
+                bool changed = false;
                 Match m = REGEX_PATINEUR_BAD_STARTS.Match(patineur.LastName);
                 if (m.Success)
                 {
                     patineur.LastName = m.Groups[2].Value.Trim();
+                    changed = true;
+                }
+
+                m = REGEX_PATINEUR_END_NUMBER.Match(patineur.FirstName);
+                if (m.Success)
+                {
+                    patineur.FirstName = m.Groups[1].Value.Trim();
+                    changed = true;
+                }
+                if(changed)
+                {
                     patineur.Save();
                 }
             }

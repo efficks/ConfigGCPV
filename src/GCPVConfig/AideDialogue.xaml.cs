@@ -32,6 +32,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ConfigPAT;
 
 namespace ConfigPat
 {
@@ -62,7 +63,10 @@ namespace ConfigPat
         public AideDialogue()
         {
             InitializeComponent();
-            mdViewer.Markdown = ReadResource("aide.md");
+            string markdownString = ReadResource("aide.md");
+            markdownString = markdownString.Replace("{{ version }}", Common.version());
+            markdownString = markdownString.Replace("{{ annee }}", DateTime.Now.Year.ToString());
+            mdViewer.Markdown = markdownString;
         }
     }
 }

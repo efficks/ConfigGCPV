@@ -1,5 +1,7 @@
 ﻿## Outil d'aide au montage de compétition
 
+GCPV Config version {{ version }}
+
 Cet outil permet de charger des inscriptions produites par le système IceReg en
 format XLSX et de les intégrer dans une compétiton contenu dans un fichier PAT.
 Pour bien fonctionner, vos fichier doivent répondrent à certains critères.
@@ -42,7 +44,7 @@ VOUS DEVEZ VÉRIFIER manuellement à la fin s'il y a des patineurs en double et 
 ## License
 ConfigGCPV - Outil d'aide à la configuration de fichier PAT
 
-Copyright (C) 2022  François-Xavier Choinière
+Copyright (C) {{ annee }}  François-Xavier Choinière
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

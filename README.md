@@ -2,7 +2,7 @@
 Outil d'aide au montage de compétition GCPV
 
 # License
-Copyright (C) 2022  François-Xavier Choinière
+Copyright (C) 2023  François-Xavier Choinière
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

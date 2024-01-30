@@ -1,30 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
 	<?if $(var.Platform) = x64 ?>
 	<?define bitness = "(64 bit)" ?>
 	<?define Win64 = "yes" ?>
 	<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-	<?else ?>
+	<?else?>
 	<?define bitness = "(32 bit)" ?>
 	<?define Win64 = "no" ?>
 	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
-	<?endif ?>
+	<?endif?>
 
-	<Product Id="*" Name="GCPVConfig $(var.bitness)" Language="3084" Codepage="Windows-1252" Version="!(bind.FileVersion.GCPVConfigExe)" Manufacturer="François-Xavier Choinière" UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" />
+	<Package Name="GCPVConfig $(var.bitness)" Language="3084" Codepage="Windows-1252" Version="!(bind.FileVersion.GCPVConfigExe)" Manufacturer="François-Xavier Choinière" UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D" InstallerVersion="200" Scope="perUser">
+    
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate  EmbedCab="yes"/>
+		<MediaTemplate EmbedCab="yes" />
 
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 			<ComponentRef Id="configShortcut" />
 		</Feature>
-	</Product>
+	</Package>
 
-	<Fragment>
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="LocalAppDataFolder" Name="AppData">
+  <Fragment>
+    <netfx:DotNetCompatibilityCheck Id="netCoreStatus"
+        Property="NETCORESTATUS" RollForward="latestMajor"
+        RuntimeType="core" Version="6.0.0" Platform="x64" />
+    <Launch Condition="Installed OR NETCORESTATUS=&quot;0&quot;"
+        Message="[ProductName] requires Microsoft .NET Core - 6.0.0 or greater." />
+  </Fragment>
+
+
+  <Fragment>
+			<StandardDirectory Id="LocalAppDataFolder">
 				<Directory Id="INSTALLFOLDER" Name="GCPVConfig">
 					<Directory Id="dirRuntime" Name="runtimes">
 						<Directory Id="dirwin" Name="win">
@@ -34,15 +42,14 @@
 						</Directory>
 					</Directory>
 				</Directory>
-			</Directory>
-			<Directory Id="ProgramMenuFolder"/>
-		</Directory>
-	</Fragment>
+			</StandardDirectory>
+			<StandardDirectory Id="ProgramMenuFolder" />
+		</Fragment>
 
 	<Fragment>
-		<ComponentGroup Id="ProductComponents" >
+		<ComponentGroup Id="ProductComponents">
 			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<Component Id="comExe" Win64="$(var.Win64)" Guid="EB9C1CF0-4A3F-4688-89BB-5CD08422F2CE" Directory="INSTALLFOLDER">
+			<Component Id="comExe" Guid="EB9C1CF0-4A3F-4688-89BB-5CD08422F2CE" Directory="INSTALLFOLDER" Bitness="default">
 				<File Id="GCPVConfigExe" Name="GCPVConfig.exe" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.exe" />
 				<File Id="GCPVConfigDll" Name="GCPVConfig.dll" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.dll" />
 				<File Id="GCPVConfigdepsjson" Name="GCPVConfig.deps.json" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.deps.json" />
@@ -64,8 +71,8 @@
 				<File Id="System.Text.Encoding.CodePages" Name="System.Text.Encoding.CodePages.dll" Source="$(var.GCPVConfig.TargetDir)\System.Text.Encoding.CodePages.dll" />
 				<File Id="System.Windows.Extensions" Name="System.Windows.Extensions.dll" Source="$(var.GCPVConfig.TargetDir)\System.Windows.Extensions.dll" />
 				
-				<RemoveFolder Id="CleanUpShortCut" Directory="INSTALLFOLDER" On="uninstall"/>
-				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedexe" Type="integer" Value="1" KeyPath="yes"/>
+				<RemoveFolder Id="CleanUpShortCut" Directory="INSTALLFOLDER" On="uninstall" />
+				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedexe" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
 
 			<Component Id="com_net6" Directory="dirnet6" Guid="527D2C90-F8DB-4201-B7A2-745AA278B6B4">
@@ -77,23 +84,19 @@
 				<File Id="filED1E3215B35632E8668249818CD638B9" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll" />
 				<File Id="fil0C1538D8A436BB0E14AF6D2C70EF3F5D" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Windows.Extensions.dll" />
 				
-				<RemoveFolder Id="remove1" Directory="dirRuntime" On="uninstall"/>
-				<RemoveFolder Id="remove2" Directory="dirwin" On="uninstall"/>
-				<RemoveFolder Id="remove3" Directory="dirlib" On="uninstall"/>
-				<RemoveFolder Id="remove4" Directory="dirnet6" On="uninstall"/>
-				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedcn" Type="integer" Value="1" KeyPath="yes"/>
+				<RemoveFolder Id="remove1" Directory="dirRuntime" On="uninstall" />
+				<RemoveFolder Id="remove2" Directory="dirwin" On="uninstall" />
+				<RemoveFolder Id="remove3" Directory="dirlib" On="uninstall" />
+				<RemoveFolder Id="remove4" Directory="dirnet6" On="uninstall" />
+				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedcn" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
 		</ComponentGroup>
 		
-		<DirectoryRef Id="ProgramMenuFolder">
+		<StandardDirectory Id="ProgramMenuFolder">
 			<Component Id="configShortcut" Guid="">
-				<Shortcut Id="ApplicationStartMenuShortcut"
-							Name="GCPV Config"
-							Description="GCPV Config"
-							Target="[#GCPVConfigExe]"
-							WorkingDirectory="ProgramMenuFolder"/>
-				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedshort" Type="integer" Value="1" KeyPath="yes"/>
+				<Shortcut Id="ApplicationStartMenuShortcut" Name="GCPV Config" Description="GCPV Config" Target="[#GCPVConfigExe]" WorkingDirectory="ProgramMenuFolder" />
+				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedshort" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
-		</DirectoryRef>
+		</StandardDirectory>
 	</Fragment>
 </Wix>
