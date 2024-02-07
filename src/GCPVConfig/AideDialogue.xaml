@@ -17,12 +17,12 @@
 
     François-Xavier Choinière, fx@efficks.com
 -->
-<Window x:Class="ConfigPat.AideDialogue"
+<Window x:Class="GCPVConfig.AideDialogue"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ConfigPat"
+        xmlns:local="clr-namespace:GCPVConfig"
         xmlns:mdxam="clr-namespace:MdXaml;assembly=MdXaml"
         mc:Ignorable="d"
         Title="AideDialogue" Height="470" Width="748">

@@ -17,7 +17,7 @@
 
     François-Xavier Choinière, fx@efficks.com
 */
-using ConfigPAT;
+using GCPVConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +33,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ConfigPat
+namespace GCPVConfig
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

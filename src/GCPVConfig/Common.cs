@@ -24,9 +24,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static ConfigPAT.Inscription;
+using static GCPVConfig.Inscription;
 
-namespace ConfigPAT
+namespace GCPVConfig
 {
     public interface IInscription
     {

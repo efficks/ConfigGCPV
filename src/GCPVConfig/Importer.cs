@@ -17,19 +17,20 @@
 
     François-Xavier Choinière, fx@efficks.com
 */
-using ConfigPAT;
+using GCPVConfig;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using static ConfigPAT.FichierPAT;
+using static GCPVConfig.FichierPAT;
 
-namespace ConfigPat
+namespace GCPVConfig
 {
     internal class ConflictFoundEventArgs : EventArgs
     {
@@ -41,6 +42,17 @@ namespace ConfigPat
         {
             get{ return mre; }
         }
+    }
+
+    internal class Groupe
+    {
+        public Groupe(string nom)
+        {
+            Nom = nom;
+            Patineurs = new List<Patineur>();
+        }
+        public string Nom { get; set; }
+        public List<Patineur> Patineurs { get; set; }
     }
 
     internal class SelectCompetitionEventArgs : EventArgs
@@ -98,13 +110,17 @@ namespace ConfigPat
 
         private string mInscriptionPath;
         private string mPATPath;
+        private Config mConfiguration;
+        private string mTypeCompetitionName;
 
         public IProgress<string>? ProgressMessage { get; set; }
 
-        public Importer(string inscriptionPath, string patPath)
+        public Importer(string inscriptionPath, string patPath, Config configuration, string typeCompetitionName)
         {
             mInscriptionPath = inscriptionPath;
             mPATPath = patPath;
+            mConfiguration = configuration;
+            mTypeCompetitionName = typeCompetitionName;
         }
 
         public async Task Import()
@@ -139,15 +155,31 @@ namespace ConfigPat
                     ProgressMessage?.Report(e.Message);
                     return;
                 }
+
+                var typeCompeConfig = mConfiguration.GetTypeConfig(mTypeCompetitionName);
+                if (typeCompeConfig.NumeroBonnet)
+                {
+                    inscriptions.Sort((ins1, ins2) => ins1.Club.CompareTo(ins2.Club));
+                    int nocasque = 1;
+                    foreach(var ins in inscriptions)
+                    {
+                        ins.NoCasque = nocasque;
+                        nocasque++;
+                    }
+                }
+
                 ProgressMessage?.Report(String.Format("{0} inscriptions chargées", inscriptions.Count));
 
                 ProgressMessage?.Report("Correction des catégories");
-                pat.FixCategories();
+                pat.FixCategories(mConfiguration.Categories);
                 pat.FixPatineurNom();
 
                 try
                 {
-                    SetupPatineurs(inscriptions, pat);
+                    if(!SetupPatineurs(inscriptions, pat))
+                    {
+                        return;
+                    }
                 }
                 catch(Exception e)
                 {
@@ -175,12 +207,12 @@ namespace ConfigPat
                 foreach (var inscription in inscriptions)
                 {
                     var patineur = pat.GetPatineurByNoMembre(inscription.MemberNumber);
-                    pat.Inscrire(patineur, competitionToImport);
+                    pat.Inscrire(patineur, competitionToImport, mConfiguration.Division, inscription.NoCasque);
                 }
             }
         }
 
-        private void SetupPatineurs(List<Inscription> inscriptions, FichierPAT pat)
+        private bool SetupPatineurs(List<Inscription> inscriptions, FichierPAT pat)
         {
             foreach (var inscription in inscriptions)
             {
@@ -195,7 +227,7 @@ namespace ConfigPat
                     if(!ValidateSame(inscription, patineur))
                     {
                         ProgressMessage?.Report("Arrêt de l'importation");
-                        return;
+                        return false;
                     }
                 }
                 else
@@ -242,7 +274,7 @@ namespace ConfigPat
                         }*/
 
                         ProgressMessage?.Report(String.Format("Ajout du patineur {0}, {1}", inscription.LastName, inscription.FirstName));
-                        pat.Add(inscription);
+                        pat.Add(inscription, mConfiguration.Division);
                     }
                 }
                 /*
@@ -251,6 +283,7 @@ namespace ConfigPat
                  * Même nom (ci), prénom (ci), dob, club, sexe
                  */
             }
+            return true;
         }
 
         private bool ValidateSame(Inscription inscription, FichierPAT.Patineur patineur)
@@ -292,6 +325,93 @@ namespace ConfigPat
             return true;
         }
 
-        //private void FixPatineurCat()
+        public async Task Regroup(string v)
+        {
+            await Task.Run(() =>
+            {
+                ProgressMessage?.Report("Début du regroupement");
+
+                ProgressMessage?.Report("Ouverture du fichier PAT");
+                var pat = FichierPAT.Open(mPATPath);
+
+                if (!pat.Ok())
+                {
+                    ProgressMessage?.Report("Erreur lors de l'ouverture du fichier PAT");
+                    return;
+                }
+
+                if (pat is null)
+                {
+                    return;
+                }
+
+                var typeCompeConfig = mConfiguration.GetTypeConfig(mTypeCompetitionName);
+                var competitions = pat.GetCompetitions();
+                Competition competitionToImport = OnSelectCompetition(competitions);
+
+                List<string> competiteursId = pat.GetCompetiteurs(competitionToImport);
+
+                List<Patineur> competiteurs = new List<Patineur>();
+                foreach (string id in competiteursId)
+                {
+                    competiteurs.Add(pat.GetPatineurByNoMembre(id));
+                }
+
+                Dictionary<string, bool> configCategoryMixte = new Dictionary<string, bool>();
+                foreach(var cat in mConfiguration.Categories)
+                {
+                    configCategoryMixte[cat.Name] = cat.Mixte;
+                }
+
+                Dictionary<string, List<Patineur>> patineurParCategoye = new Dictionary<string, List<Patineur>>();
+
+                foreach(Patineur patineur in competiteurs)
+                {
+                    var groupname = pat.GetCategoryNom(patineur.NoCategory);
+                    string gr1 = groupname;
+                    groupname += " gr. {0}";
+                    if (!configCategoryMixte[gr1]) //non-mixte
+                    {
+                        groupname += patineur.Sex == IInscription.SexEnum.Male ? " M":" F";
+                    }
+
+                    if(!patineurParCategoye.ContainsKey(groupname))
+                    {
+                        patineurParCategoye.Add(groupname, new List<Patineur>());
+                    }
+                    patineurParCategoye[groupname].Add(patineur);
+                }
+
+                Dictionary<string, List<Patineur>> groups = new Dictionary<string, List<Patineur>>();
+
+                foreach(string categoryname in patineurParCategoye.Keys)
+                {
+                    int i = 1;
+                    List<Patineur> currentGroup = new List<Patineur>();
+                    groups.Add(String.Format(categoryname, i),currentGroup);
+
+                    var patineurcategory = patineurParCategoye[categoryname];
+                    patineurcategory.Sort((p1, p2) => p1.GetClassement(v).CompareTo(p2.GetClassement(v)));
+
+                    while(patineurcategory.Count > 0)
+                    {
+                        Patineur p = patineurcategory[0];
+                        patineurcategory.RemoveAt(0);
+
+                        if(currentGroup.Count >= 15 && patineurcategory.Count>8)
+                        {
+                            i++;
+                            currentGroup = new List<Patineur>();
+                            groups.Add(String.Format(categoryname, i), currentGroup);
+                        }
+                        currentGroup.Add(p);
+                    }
+                }
+
+                pat.AjoutGroup(groups, competitionToImport);
+
+                ProgressMessage?.Report("Fin du regroupement");
+            });
+        }
     }
 }

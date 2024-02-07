@@ -29,7 +29,7 @@ using MdXaml;
 using System.Windows.Documents;
 
 
-namespace ConfigPat
+namespace GCPVConfig
 {
     /// <summary>
     /// Interaction logic for App.xaml

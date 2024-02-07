@@ -32,9 +32,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using ConfigPAT;
+using GCPVConfig;
 
-namespace ConfigPat
+namespace GCPVConfig
 {
     /// <summary>
     /// Logique d'interaction pour AideDialogue.xaml
@@ -47,7 +47,7 @@ namespace ConfigPat
             var assembly = Assembly.GetExecutingAssembly();
             string resourcePath = name;
             // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
-            if (!name.StartsWith(nameof(ConfigPat)))
+            if (!name.StartsWith(nameof(GCPVConfig)))
             {
                 resourcePath = assembly.GetManifestResourceNames()
                     .Single(str => str.EndsWith(name));

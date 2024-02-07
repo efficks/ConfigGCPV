@@ -32,12 +32,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows.Data;
-using static ConfigPAT.FichierPAT;
-using static ConfigPAT.Inscription;
+using static GCPVConfig.FichierPAT;
+using static GCPVConfig.Inscription;
 
 using System.Diagnostics;
+using System.Security.Cryptography;
 
-namespace ConfigPAT
+namespace GCPVConfig
 {
     public class FichierPAT
     {
@@ -84,6 +85,19 @@ namespace ConfigPAT
             public string Club { get; set; }
             public int NoCategory { get; set; }
 
+            public double GetClassement(string type)
+            {
+                using (var conn = fichierPat.GetConnection())
+                {
+                    conn.Open();
+                    var cmd = new OleDbCommand("SELECT " + type + " FROM TPatineurs WHERE NoPatineur=@nopatineur",conn);
+                    cmd.Parameters.AddWithValue("@nopatineur", NoPatineur);
+
+                    double? v = (double?)cmd.ExecuteScalar();
+                    return v is null ? 999 : (double)v;
+                }
+            }
+
             public void Save()
             {
                 if(this.MemberNumber is null)
@@ -122,7 +136,7 @@ namespace ConfigPAT
                 }
             }
         }
-        private class Categorie
+        /*private class Categorie
         {
             public Categorie()
             {
@@ -133,14 +147,14 @@ namespace ConfigPAT
             public string Nom { get; set; }
             public int Min { get; set; }
             public int Max { get; set; }
-        }
+        }*/
 
-        private static List<Categorie> CATEGORIES = new List<Categorie>() {
+        /*private static List<Categorie> CATEGORIES = new List<Categorie>() {
             new Categorie { Nom = "5-6 ans", Min=5, Max=6 },
             new Categorie { Nom = "7-8 ans", Min = 7, Max = 8 },
             new Categorie { Nom = "9-10 ans", Min = 9, Max = 10 },
             new Categorie { Nom = "11-14 ans", Min = 11, Max = 14 }
-        };
+        };*/
 
         public string Path { get; }
         private Dictionary<string, Patineur> patineurs = new Dictionary<string, Patineur>();
@@ -196,12 +210,35 @@ namespace ConfigPAT
             }
         }
 
+        public List<Tuple<string, string>> GetClassementName()
+        {
+            List<Tuple<string, string>> classements = new List<Tuple<string, string>>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                OleDbCommand cmd = new OleDbCommand("SELECT TOP 1 NomClassement, NomClassementGeneral, NomClassement1000, NomClassement1500, NomClassement2000, NomClassement2500 FROM TParametres", conn);
+                var reader = cmd.ExecuteReader();
+                
+                reader.Read();
+                classements.Add(new Tuple<string, string>("Classement", reader.GetString(0)));
+                classements.Add(new Tuple<string, string>("ClassementGeneral", reader.GetString(1)));
+                classements.Add(new Tuple<string, string>("Classement1000", reader.GetString(2)));
+                classements.Add(new Tuple<string, string>("Classement1500", reader.GetString(3)));
+                classements.Add(new Tuple<string, string>("Classement2000", reader.GetString(4)));
+                classements.Add(new Tuple<string, string>("Classement2500", reader.GetString(5)));
+            }
+            return classements;
+        }
+
         private List<Patineur> GetAllPatineurs()
         {
             using (var conn = GetConnection())
             {
                 conn.Open();
-                OleDbCommand cmd = new OleDbCommand("SELECT NoPatineur, Prenom, Nom, [Date de naissance] AS DOB, Sexe, Division, NoCategorie, TPatineurs.NoClub, Classement, CategCalc, CodePat, Abreviation FROM TPatineurs INNER JOIN TClubs ON TPatineurs.NoClub=TClubs.NoClub;", conn);
+                OleDbCommand cmd = new OleDbCommand(@"SELECT NoPatineur, Prenom, TPatineurs.Nom, [Date de naissance] AS DOB, Sexe, Division, TPatineurs.NoCategorie, TPatineurs.NoClub, Classement, CategCalc, CodePat, Abreviation, TCategorie.Nom
+                    FROM (TPatineurs
+                    INNER JOIN TClubs ON TPatineurs.NoClub=TClubs.NoClub)
+                    INNER JOIN TCategorie ON TPatineurs.NoCategorie=TCategorie.NoCategorie;", conn);
                 var reader = cmd.ExecuteReader();
 
                 List<Patineur> patineurs = new List<Patineur>();
@@ -238,6 +275,18 @@ namespace ConfigPAT
             }
         }
 
+        public string GetCategoryNom(int numerocat)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                OleDbCommand cmd = new OleDbCommand(@"SELECT TOP 1 Nom FROM TCategorie WHERE NoCategorie=@nocat", conn);
+
+                cmd.Parameters.AddWithValue("@nocat", numerocat);
+                return (string)cmd.ExecuteScalar();
+            }
+        }
+
         public Patineur? GetPatineurByNoMembre(string noMembre)
         {
             if(patineurs.ContainsKey(noMembre))
@@ -245,36 +294,6 @@ namespace ConfigPAT
                 return patineurs[noMembre];
             }
             return null;
-            /*using (var conn = GetConnection())
-            {
-                conn.Open();
-                OleDbCommand cmd = new OleDbCommand("SELECT TOP 1 NoPatineur, Prenom, Nom, [Date de naissance] AS DOB, Sexe, Division, NoCategorie, TPatineurs.NoClub, Classement, CategCalc, CodePat, Abreviation FROM TPatineurs INNER JOIN TClubs ON TPatineurs.NoClub=TClubs.NoClub WHERE CodePat=@codepat", conn);
-                cmd.Parameters.AddRange(new OleDbParameter[]
-                {
-                    new OleDbParameter("@codepat", noMembre)
-                });
-                var reader = cmd.ExecuteReader();
-
-                Patineur? patineur = null;
-                if (reader.HasRows)
-                {
-                    reader.Read();
-
-                    patineur = new Patineur(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetString(2),
-                        reader.GetString(4).ToLower() == "m" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
-                        DateOnly.FromDateTime(reader.GetDateTime(3)),
-                        reader.GetString(10),
-                        reader.GetString(11),
-                        reader.GetInt32(6),
-                        this
-                    );
-                }
-
-                return patineur;
-            }*/
         }
 
         public Patineur? GetPatineurByInfo(IInscription inscription)
@@ -290,39 +309,6 @@ namespace ConfigPAT
                 }
             }
             return null;
-
-            /*using (var conn = GetConnection())
-            {
-                conn.Open();
-                OleDbCommand cmd = new OleDbCommand("SELECT TOP 1 NoPatineur, Prenom, Nom, [Date de naissance] AS DOB, Sexe, Division, NoCategorie, TPatineurs.NoClub, Classement, CategCalc, CodePat, Abreviation FROM TPatineurs INNER JOIN TClubs ON TPatineurs.NoClub=TClubs.NoClub WHERE Nom=@nom AND Prenom=@prenom AND [Date de naissance]=@dob", conn);
-                cmd.Parameters.AddRange(new OleDbParameter[]
-                {
-                    new OleDbParameter("@nom", inscription.LastName.ToUpper()),
-                    new OleDbParameter("@prenom", inscription.FirstName.ToUpper()),
-                    new OleDbParameter("@dob", inscription.BirthDate.ToDateTime(new TimeOnly(0,0,0)))
-                });
-                var reader = cmd.ExecuteReader();
-
-                Patineur? patineur = null;
-                if (reader.HasRows)
-                {
-                    reader.Read();
-
-                    patineur = new Patineur(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetString(2),
-                        reader.GetString(4).ToLower() == "m" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
-                        DateOnly.FromDateTime(reader.GetDateTime(3)),
-                        reader.GetString(10),
-                        reader.GetString(11),
-                        reader.GetInt32(6),
-                        this
-                    );
-                }
-
-                return patineur;
-            }*/
         }
 
         private static Regex REGEX_PATINEUR_BAD_STARTS = new Regex(@"^(\d+)\s*(.+)$");
@@ -354,7 +340,7 @@ namespace ConfigPAT
             }
         }
 
-        public void FixCategories()
+        internal void FixCategories(List<Category> categories)
         {
             using (var conn = GetConnection())
             {
@@ -368,7 +354,7 @@ namespace ConfigPAT
                         cmd.ExecuteNonQuery();
                     }
 
-                    foreach (Categorie categorie in CATEGORIES)
+                    foreach (Category categorie in categories)
                     {
                         int? catNo = null;
                         {
@@ -376,7 +362,7 @@ namespace ConfigPAT
                             cmd.Transaction = transaction;
                             cmd.Parameters.AddRange(new OleDbParameter[]
                             {
-                                new OleDbParameter("@nom", categorie.Nom)
+                                new OleDbParameter("@nom", categorie.Name)
                             });
                             catNo = (int?)cmd.ExecuteScalar();
                         }
@@ -387,10 +373,10 @@ namespace ConfigPAT
                             cmd.Transaction = transaction;
                             cmd.Parameters.AddRange(new OleDbParameter[]
                             {
-                                new OleDbParameter("@agemin", categorie.Min),
-                                new OleDbParameter("@agemax", categorie.Max),
-                                new OleDbParameter("@ageminf", categorie.Min),
-                                new OleDbParameter("@agemaxf", categorie.Max),
+                                new OleDbParameter("@agemin", categorie.MinAge),
+                                new OleDbParameter("@agemax", categorie.MaxAge),
+                                new OleDbParameter("@ageminf", categorie.MinAge),
+                                new OleDbParameter("@agemaxf", categorie.MaxAge),
                                 new OleDbParameter("@nocat", catNo)
                             });
                             cmd.ExecuteNonQuery();
@@ -401,11 +387,11 @@ namespace ConfigPAT
                             cmd.Transaction = transaction;
                             cmd.Parameters.AddRange(new OleDbParameter[]
                             {
-                                new OleDbParameter("@nom", categorie.Nom),
-                                new OleDbParameter("@agemin", categorie.Min),
-                                new OleDbParameter("@agemax", categorie.Max),
-                                new OleDbParameter("@ageminf", categorie.Min),
-                                new OleDbParameter("@agemaxf", categorie.Max)
+                                new OleDbParameter("@nom", categorie.Name),
+                                new OleDbParameter("@agemin", categorie.MinAge),
+                                new OleDbParameter("@agemax", categorie.MaxAge),
+                                new OleDbParameter("@ageminf", categorie.MinAge),
+                                new OleDbParameter("@agemaxf", categorie.MaxAge)
                             });
                             cmd.ExecuteNonQuery();
                         }
@@ -477,7 +463,7 @@ namespace ConfigPAT
             }
         }
 
-        public void Add(IInscription inscription)
+        public void Add(IInscription inscription, string division)
         {
             if (inscription.MemberNumber is null)
             {
@@ -494,7 +480,7 @@ namespace ConfigPAT
 
                 int nocat = GetCategoryByDOB(inscription.BirthDate, inscription.Sex);
                 {
-                        var cmd = new OleDbCommand("INSERT INTO TPatineurs (Prenom, Nom, [Date de naissance], Sexe, Division, NoCategorie, NoClub, Classement, CategCalc, CodePat, Classement1000, Classement1500, ClassementGeneral, Classement2000, Classement2500) VALUES (@prenom, @nom, @dob, @sexe, 'Régional', @nocat, @noclub, 999, 1, @codepat, 999, 999, 999, 999, 999);", conn);
+                        var cmd = new OleDbCommand("INSERT INTO TPatineurs (Prenom, Nom, [Date de naissance], Sexe, Division, NoCategorie, NoClub, Classement, CategCalc, CodePat, Classement1000, Classement1500, ClassementGeneral, Classement2000, Classement2500) VALUES (@prenom, @nom, @dob, @sexe, @division, @nocat, @noclub, 999, 1, @codepat, 999, 999, 999, 999, 999);", conn);
                     cmd.Parameters.AddRange(new OleDbParameter[]
                     {
                         
@@ -505,7 +491,8 @@ namespace ConfigPAT
                         new OleDbParameter("@sexe", inscription.Sex==IInscription.SexEnum.Male?"M":"F"),
                         new OleDbParameter("@nocat", nocat),
                         new OleDbParameter("@noclub", GetNoClub(inscription.Club)),
-                        new OleDbParameter("@codepat", inscription.MemberNumber)
+                        new OleDbParameter("@codepat", inscription.MemberNumber),
+                        new OleDbParameter("@division", division)
                     });
                     cmd.ExecuteNonQuery();
                 }
@@ -584,7 +571,7 @@ namespace ConfigPAT
             }
         }
 
-        public void Inscrire(Patineur patineur, Competition competition)
+        public void Inscrire(Patineur patineur, Competition competition, string division, int nocasque)
         {
             var idclub = GetNoClub(patineur.Club);
 
@@ -592,18 +579,82 @@ namespace ConfigPAT
             {
                 conn.Open();
 
-                var cmd = new OleDbCommand("INSERT INTO TPatineur_compe (NoCompetition, NoPatineur, Division, NoCategorie, NoClub, Rang, Groupe, Si_Regroup_Classement) VALUES (@nocompe, @nopat, 'Régional', @nocat, @noclub, 0, 'Pas dans un groupe', 1)", conn);
+                OleDbCommand cmd = new OleDbCommand("INSERT INTO TPatineur_compe (NoCompetition, NoPatineur, Division, NoCategorie, NoClub, Rang, Groupe, Si_Regroup_Classement, NoCasque) VALUES (@nocompe, @nopat, @division, @nocat, @noclub, 0, 'Pas dans un groupe', 1, @nocasque)", conn);
 
                 cmd.Parameters.AddRange(new OleDbParameter[]
                 {
                     new OleDbParameter("@nocompe", competition.Id),
                     new OleDbParameter("@nopat", patineur.NoPatineur),
+                    new OleDbParameter("@division", division),
                     new OleDbParameter("@nocat", patineur.NoCategory),
-                    new OleDbParameter("@noclub", idclub)
-                });
+                    new OleDbParameter("@noclub", idclub),
+                    new OleDbParameter("@nocasque", nocasque==0?DBNull.Value:nocasque)
+            });
 
                 cmd.ExecuteNonQuery();
             }
         }
+
+        internal List<string> GetCompetiteurs(Competition? competitionToImport)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                var cmd = new OleDbCommand("SELECT CodePat FROM TPatineur_compe INNER JOIN TPatineurs ON TPatineurs.NoPatineur=TPatineur_compe.NoPatineur WHERE NoCompetition=@nocompet", conn);
+                cmd.Parameters.AddWithValue("@nocompet", competitionToImport.Id);
+
+                var reader = cmd.ExecuteReader();
+
+                List<string> patineurs = new List<string>();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        patineurs.Add(reader.GetString(0));
+                    }
+                }
+
+                return patineurs;
+            }
+        }
+
+        internal void AjoutGroup(Dictionary<string, List<Patineur>> groups, Competition competitionToImport)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                {
+                    var cmd = new OleDbCommand("DELETE FROM TGroupes_Compe WHERE NoCompetition=@nocompet", conn);
+                    cmd.Parameters.AddWithValue("@nocompet", competitionToImport.Id);
+                    cmd.ExecuteNonQuery();
+                }
+
+                foreach(var group in groups)
+                {
+                    {
+                        var cmd = new OleDbCommand("INSERT INTO TGroupes_Compe(NoCompetition, Groupe, GroupeAdditionnelResultats) VALUES (@nocompet,@groupname,'N/A')", conn);
+                        cmd.Parameters.AddRange(new OleDbParameter[]
+                        {
+                            new OleDbParameter("@nocompet",competitionToImport.Id),
+                            new OleDbParameter("@groupname",group.Key)
+                        });
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    foreach(Patineur patineur in group.Value)
+                    {
+                        var cmd = new OleDbCommand("UPDATE TPatineur_compe SET Groupe=@groupname WHERE NoCompetition=@nocompet AND NoPatineur=@nopat", conn);
+                        cmd.Parameters.AddRange(new OleDbParameter[]
+                        {
+                            new OleDbParameter("@groupname",group.Key),
+                            new OleDbParameter("@nocompet",competitionToImport.Id),
+                            new OleDbParameter("@nopat",patineur.NoPatineur)
+                        });
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            }
     }
 }

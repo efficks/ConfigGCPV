@@ -17,32 +17,32 @@
 
     François-Xavier Choinière, fx@efficks.com
 */
-using ConfigPAT;
+using GCPVConfig;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Xps;
 
-namespace ConfigPat
+namespace GCPVConfig
 {
     public class CourseTemps
     {
         public string Distance { get; set; }
         public string Secondes { get; set; }
+    }
+
+    public class ClassementComboItem
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 
     /// <summary>
@@ -52,6 +52,7 @@ namespace ConfigPat
     {
         private delegate void NoArgDelegate(IProgress<string> progress);
         private ObservableCollection<CourseTemps> EmployeeCollection = new ObservableCollection<CourseTemps>();
+        private Config mConfig = null;
 
         public MainWindow()
         {
@@ -59,8 +60,24 @@ namespace ConfigPat
             ValidImportation();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            //grid_temps.DataContext = EmployeeCollection;
-            this.Title = "GCPV Config version " + Common.version();
+            this.Title = String.Format("GCPV Config version {0}", Common.version());
+
+            try
+            {
+                mConfig = Config.load("GCPVCOnfig.yaml");
+            }
+            catch
+            {
+                MessageBox.Show("Erreur lors de l'ouverture du fichier de configuration GCPVCOnfig.yaml",
+                    "Erreur de configuration",
+                    MessageBoxButton.OK,MessageBoxImage.Error);
+                throw;
+            }
+
+            foreach (var typecompe in mConfig.TypeCompetition)
+            {
+                this.combo_evenement_type.Items.Add(typecompe.Name);
+            }
         }
 
         private void DG1_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -105,13 +122,52 @@ namespace ConfigPat
             openFileDialog.Filter = "Fichier PAT (*.pat)|*.pat|Tous les fichiers (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                txt_patPath.Text = openFileDialog.FileName;
+                var old_cursor = this.Cursor;
+                try
+                {
+                    this.Cursor = Cursors.Wait;
+                    txt_patPath.Text = openFileDialog.FileName;
+
+                    combo_competition_list.Items.Clear();
+                    combo_classement.Items.Clear();
+
+                    if (File.Exists(txt_patPath.Text))
+                    {
+                        var patfile = FichierPAT.Open(txt_patPath.Text);
+                        var competitions = patfile.GetCompetitions();
+
+                        foreach (var compe in competitions)
+                        {
+                            combo_competition_list.Items.Add(compe.Nom);
+                            combo_competition_list.IsEnabled = true;
+                        }
+
+                        var classements = patfile.GetClassementName();
+                        foreach (var c in classements)
+                        {
+                            ClassementComboItem newitem = new ClassementComboItem();
+                            newitem.Value = c.Item1;
+                            newitem.Text = c.Item2;
+
+                            combo_classement.Items.Add(newitem);
+                        }
+                    }
+                    else
+                    {
+                        combo_competition_list.IsEnabled = false;
+                    }
+
+                }
+                finally
+                {
+                    this.Cursor = old_cursor;
+                }
             }
         }
 
         private void ValidImportation()
         {
-            btn_launchImport.IsEnabled = txt_patPath.Text.Length > 0 && txt_inscriptionPath.Text.Length > 0;
+            btn_launchImport.IsEnabled = txt_patPath.Text.Length > 0 && txt_inscriptionPath.Text.Length > 0 && combo_evenement_type.SelectedValue != null && combo_competition_list.SelectedValue != null;
         }
 
         private void txt_patPath_TextChanged(object sender, TextChangedEventArgs e)
@@ -126,16 +182,22 @@ namespace ConfigPat
 
         private async void btn_launchImport_Click(object sender, RoutedEventArgs e)
         {
+            btn_launchImport.IsEnabled = false;
+            var old_cursor = Cursor;
+            Cursor = Cursors.Wait;
             Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
 
             txt_log.Clear();
             string inscriptionPath = txt_inscriptionPath.Text;
             string patPath = txt_patPath.Text;
-            Importer importer = new Importer(inscriptionPath, patPath);
+            Importer importer = new Importer(inscriptionPath, patPath, mConfig, combo_evenement_type.SelectedItem.ToString());
             importer.ProgressMessage = progressMessage;
             importer.ConflictFound += ConflictFound;
             importer.SelectCompetition += SelectCompetition;
             await importer.Import();
+
+            btn_launchImport.IsEnabled = true;
+            Cursor = old_cursor;
         }
         private void NewMessageReport(string msg)
         {
@@ -152,21 +214,14 @@ namespace ConfigPat
             {
                 try
                 {
-                    SelectCompe window = new SelectCompe(e.Competition);
-                    var result = window.ShowDialog();
-                    if (result is not null && result == true)
-                    {
-                        e.Choice = window.Choice;
-                    }
-                    else
-                    {
-                        e.Choice = null;
-                    }
-                }
-                catch
-                {
                     e.Choice = null;
-                    throw;
+                    foreach (var c in e.Competition)
+                    {
+                        if (c.Nom == combo_competition_list.SelectedItem.ToString())
+                        {
+                            e.Choice = c;
+                        }
+                    }
                 }
                 finally
                 {
@@ -212,6 +267,37 @@ namespace ConfigPat
         private void btn_launchMinute_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void combo_evenement_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.ValidImportation();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void btn_launchRegroupement_Click(object sender, RoutedEventArgs e)
+        {
+            btn_launchRegroupement.IsEnabled = false;
+            var old_cursor = Cursor;
+            Cursor = Cursors.Wait;
+
+            Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
+
+            txt_log.Clear();
+            string inscriptionPath = txt_inscriptionPath.Text;
+            string patPath = txt_patPath.Text;
+            Importer importer = new Importer(inscriptionPath, patPath, mConfig, combo_evenement_type.SelectedItem.ToString());
+            importer.ProgressMessage = progressMessage;
+            importer.ConflictFound += ConflictFound;
+            importer.SelectCompetition += SelectCompetition;
+            await importer.Regroup( ((ClassementComboItem)combo_classement.SelectedItem).Value);
+
+            btn_launchRegroupement.IsEnabled = true;
+            Cursor = old_cursor;
         }
     }
 }

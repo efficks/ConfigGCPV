@@ -26,7 +26,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ExcelDataReader;
 
-namespace ConfigPAT
+namespace GCPVConfig
 {
     public class Inscription: IInscription
     {
@@ -39,6 +39,7 @@ namespace ConfigPAT
             BirthDate = birthDate;
             MemberNumber = memberNumber;
             Club = club;
+            NoCasque = 0;
         }
         public string FirstName { get; }
         public string LastName { get; }
@@ -46,6 +47,8 @@ namespace ConfigPAT
         public DateOnly BirthDate { get; }
         public string? MemberNumber { get; set; }
         public string Club { get; }
+
+        public int NoCasque { get; set; }
 
         private static Regex REGEX_CLUB_ABRV = new Regex(@"^.+\((\w+)\)$");
         private static string? ExtractClubAbreviation(in string clubdata)

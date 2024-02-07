@@ -23,6 +23,9 @@
                 <Component Id="cmp.yjlWj2flYjwi6WlbqB5HmX9QpU" Guid="*">
                     <File Id="filOeGMvHEGB3_OaP1JNRxCOCUeBDk" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.runtimeconfig.json" />
                 </Component>
+                <Component Id="cmpejasy6lHOi5TjPMCeuDK3CpPlZg" Guid="*">
+                    <File Id="filA6pOYOh2sh7f6fcglTVZot_7MaA" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\GCPVConfig.yaml" />
+                </Component>
                 <Component Id="cmpjIU0TLEx_7HCR2Ppay86jNOoYlc" Guid="*">
                     <File Id="filNFmc9IlD67ALxsI.YSK1MmxeHU4" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\ICSharpCode.AvalonEdit.dll" />
                 </Component>
@@ -58,6 +61,9 @@
                 </Component>
                 <Component Id="cmpADqQwIN.I5QrjTDU61sIPjvhReE" Guid="*">
                     <File Id="filDA0qLeOWE7GzuN4fKbZmZ6mdPzc" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Windows.Extensions.dll" />
+                </Component>
+                <Component Id="cmpZ9ujuFUhfiyISiJeRRyp0.9UTlY" Guid="*">
+                    <File Id="fillyNYMTPjh45h5VErEoOf6ETtxQM" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\YamlDotNet.dll" />
                 </Component>
                 <Directory Id="dirqB7UJK50sOTvs4y2YQgdiSl20Qw" Name="runtimes">
                     <Directory Id="dirOIs9SJoPi45tJxwze10qJiz4Y2A" Name="win">
@@ -100,6 +106,7 @@
             <ComponentRef Id="cmpaLvaxtsEUNztmY.q3OAGUOfM7Ks" />
             <ComponentRef Id="cmpqZyHeYvNvJbJO1nU8sYYCbWQH6o" />
             <ComponentRef Id="cmp.yjlWj2flYjwi6WlbqB5HmX9QpU" />
+            <ComponentRef Id="cmpejasy6lHOi5TjPMCeuDK3CpPlZg" />
             <ComponentRef Id="cmpjIU0TLEx_7HCR2Ppay86jNOoYlc" />
             <ComponentRef Id="cmpmd7cRaYSDeWBOxDnmD4CVGzfAyg" />
             <ComponentRef Id="cmpaenNBddgMmhRJkUlA1KPgKgsA4U" />
@@ -112,6 +119,7 @@
             <ComponentRef Id="cmperT6oMRTfZVB2EWx.aGMvp.5VG0" />
             <ComponentRef Id="cmpAEzNMm9p2gLkE8Rdam.8h.0seQ4" />
             <ComponentRef Id="cmpADqQwIN.I5QrjTDU61sIPjvhReE" />
+            <ComponentRef Id="cmpZ9ujuFUhfiyISiJeRRyp0.9UTlY" />
             <ComponentRef Id="cmpesc6wlCW3LjYL2kX1rFRIJyEbJs" />
             <ComponentRef Id="cmpSKsSs08J4yH7LORVkPoTiRp.jrs" />
             <ComponentRef Id="cmpotTqPvh2dfj2LA9oCH7Gx8BEto4" />

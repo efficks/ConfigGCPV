@@ -17,10 +17,10 @@
 
     François-Xavier Choinière, fx@efficks.com
 -->
-<Application x:Class="ConfigPat.App"
+<Application x:Class="GCPVConfig.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ConfigPat"
+             xmlns:local="clr-namespace:GCPVConfig"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
