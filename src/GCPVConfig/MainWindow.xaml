@@ -84,7 +84,7 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" x:Name="btn_launchImport" Content="Lancer l'importation" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,196,0" Click="btn_launchImport_Click"/>
+                        <Button Grid.Column="0" x:Name="btn_launchImport" Content="Lancer l'importation" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,196,0" Click="btn_launchImport_Click" IsEnabled="False"/>
                         <Button Grid.Column="1" Content="Aide" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3,3,3,3" Click="Button_Click_1"/>
                     </Grid>
                 </Grid>
@@ -101,14 +101,14 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Label Content="Classement à utiliser" VerticalContentAlignment="Center"/>
-                        <ComboBox x:Name="combo_classement" Grid.Column="1" VerticalAlignment="Top" Width="200">
+                        <ComboBox x:Name="combo_classement" Grid.Column="1" VerticalAlignment="Top" Width="200" SelectionChanged="combo_classement_SelectionChanged" IsEnabled="False">
                         </ComboBox>
                     </Grid>
                     <Grid Grid.Row="1" Margin="5,5,5,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" x:Name="btn_launchRegroupement" Content="Regrouper les patineurs" VerticalAlignment="Center" HorizontalAlignment="Center" Click="btn_launchRegroupement_Click" />
+                        <Button Grid.Column="0" x:Name="btn_launchRegroupement" Content="Regrouper les patineurs" VerticalAlignment="Center" HorizontalAlignment="Center" Click="btn_launchRegroupement_Click" IsEnabled="False" />
 
                     </Grid>
                     

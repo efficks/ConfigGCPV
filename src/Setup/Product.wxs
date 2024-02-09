@@ -10,10 +10,17 @@
 	<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
 	<?endif?>
 
-	<Package Name="GCPVConfig $(var.bitness)" Language="3084" Codepage="Windows-1252" Version="!(bind.FileVersion.GCPVConfigExe)" Manufacturer="François-Xavier Choinière" UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D" InstallerVersion="200" Scope="perUser">
+	<Package Name="GCPVConfig $(var.bitness)"
+           Language="3084"
+           Codepage="Windows-1252"
+           Version="!(bind.FileVersion.GCPVConfigExe)"
+           Manufacturer="François-Xavier Choinière"
+           UpgradeCode="96E385C9-D19D-48DE-8D89-626D8B2C331D"
+           InstallerVersion="200"
+           Scope="perMachine">
     
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
 		<MediaTemplate EmbedCab="yes" />
 
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
@@ -53,6 +60,7 @@
 				<File Id="GCPVConfigExe" Name="GCPVConfig.exe" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.exe" />
 				<File Id="GCPVConfigDll" Name="GCPVConfig.dll" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.dll" />
 				<File Id="GCPVConfigdepsjson" Name="GCPVConfig.deps.json" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.deps.json" />
+        <File Id="GCPVConfigYaml" Name="GCPVConfig.yaml" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.yaml" />
 				<File Id="GCPVConfigruntimeconfigjson" Name="GCPVConfig.runtimeconfig.json" Source="$(var.GCPVConfig.TargetDir)\GCPVConfig.runtimeconfig.json" />
 				<File Id="License" Name="LICENSE" Source="$(var.SolutionDir)LICENSE" />
 
@@ -70,6 +78,8 @@
 				<File Id="System.Security.Permissions" Name="System.Security.Permissions.dll" Source="$(var.GCPVConfig.TargetDir)\System.Security.Permissions.dll" />
 				<File Id="System.Text.Encoding.CodePages" Name="System.Text.Encoding.CodePages.dll" Source="$(var.GCPVConfig.TargetDir)\System.Text.Encoding.CodePages.dll" />
 				<File Id="System.Windows.Extensions" Name="System.Windows.Extensions.dll" Source="$(var.GCPVConfig.TargetDir)\System.Windows.Extensions.dll" />
+        <File Id="YamlDotNet" Name="YamlDotNet.dll" Source="$(var.GCPVConfig.TargetDir)\YamlDotNet.dll" />
+        <File Id="CsvHelper" Name="CsvHelper.dll" Source="$(var.GCPVConfig.TargetDir)\CsvHelper.dll" />
 				
 				<RemoveFolder Id="CleanUpShortCut" Directory="INSTALLFOLDER" On="uninstall" />
 				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedexe" Type="integer" Value="1" KeyPath="yes" />

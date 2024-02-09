@@ -64,11 +64,16 @@ namespace GCPVConfig
 
             try
             {
-                mConfig = Config.load("GCPVCOnfig.yaml");
+                string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+
+                string configPath = Path.Combine(strWorkPath, "GCPVConfig.yaml");
+
+                mConfig = Config.load(configPath);
             }
-            catch
+            catch(Exception e)
             {
-                MessageBox.Show("Erreur lors de l'ouverture du fichier de configuration GCPVCOnfig.yaml",
+                MessageBox.Show("Erreur lors de l'ouverture du fichier de configuration GCPVConfig.yaml. Exception: "+e.ToString(),
                     "Erreur de configuration",
                     MessageBoxButton.OK,MessageBoxImage.Error);
                 throw;
@@ -108,7 +113,7 @@ namespace GCPVConfig
         private void btn_openInscription_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Fichier d'inscription (*.xlsx)|*.xlsx";
+            openFileDialog.Filter = "Fichier d'inscription (*.xlsx;*.csv)|*.xlsx;*.csv|Tous les fichiers (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 txt_inscriptionPath.Text = openFileDialog.FileName;
@@ -139,7 +144,6 @@ namespace GCPVConfig
                         foreach (var compe in competitions)
                         {
                             combo_competition_list.Items.Add(compe.Nom);
-                            combo_competition_list.IsEnabled = true;
                         }
 
                         var classements = patfile.GetClassementName();
@@ -151,10 +155,14 @@ namespace GCPVConfig
 
                             combo_classement.Items.Add(newitem);
                         }
+
+                        combo_competition_list.IsEnabled = true;
+                        combo_classement.IsEnabled = true;
                     }
                     else
                     {
                         combo_competition_list.IsEnabled = false;
+                        combo_classement.IsEnabled = false;
                     }
 
                 }
@@ -168,6 +176,8 @@ namespace GCPVConfig
         private void ValidImportation()
         {
             btn_launchImport.IsEnabled = txt_patPath.Text.Length > 0 && txt_inscriptionPath.Text.Length > 0 && combo_evenement_type.SelectedValue != null && combo_competition_list.SelectedValue != null;
+
+            btn_launchRegroupement.IsEnabled = txt_patPath.Text.Length > 0 && combo_evenement_type.SelectedValue != null && combo_competition_list.SelectedValue != null && combo_classement.SelectedValue != null;
         }
 
         private void txt_patPath_TextChanged(object sender, TextChangedEventArgs e)
@@ -298,6 +308,11 @@ namespace GCPVConfig
 
             btn_launchRegroupement.IsEnabled = true;
             Cursor = old_cursor;
+        }
+
+        private void combo_classement_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.ValidImportation();
         }
     }
 }

@@ -1,22 +1,22 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal"
      xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
-  <Bundle Name="Bundle" Manufacturer="TODO Manufacturer" Version="1.0.0.0" UpgradeCode="ed07a628-bfc4-4668-ab0f-bcd1990d7c68">
+  <Bundle Name="GCPVConfig v1.1.1" Manufacturer="efficks" Version="1.1.1" UpgradeCode="6727f6e1-e0b1-4fe9-a7a2-8967ba78a9f0">
     <BootstrapperApplication>
-      <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.example.com/license" Theme="hyperlinkLicense" />
+      <bal:WixStandardBootstrapperApplication LicenseUrl="http://opensource.org/licenses" Theme="hyperlinkLicense" />
     </BootstrapperApplication>
 
     <util:ProductSearch ProductCode="{90140000-00D1-0409-1000-0000000FF1CE}" Variable="ACCESS_REDIST_PRESENT" Result="state" />
 
     <Chain>
-      <!-- TODO: Define the list of chained packages. -->
-      <!-- <MsiPackage SourceFile="path\to\your.msi" /> -->
-      <MsiPackage SourceFile="$(var.Setup.TargetPath)" />
+      <MsiPackage SourceFile="$(var.Setup.TargetPath)" Vital="yes" Visible="no" />
       <ExePackage SourceFile="$(var.SolutionDir)thirdparty\AccessDatabaseEngine_X64.exe"
                   DownloadUrl="https://download.microsoft.com/download/2/4/3/24375141-E08D-4803-AB0E-10F2E3A07AAA/AccessDatabaseEngine_X64.exe"
                   InstallArguments="/quiet"
+                  Compressed="yes"
+                  Vital="yes"
                   Permanent="yes"
                   PerMachine="yes"
-                  DetectCondition="ACCESS_REDIST_PRESENT&lt;&gt;5"/>
+                  DetectCondition="ACCESS_REDIST_PRESENT=5"/>
     </Chain>
 
   </Bundle>

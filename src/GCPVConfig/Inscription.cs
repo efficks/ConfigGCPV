@@ -19,11 +19,14 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration.Attributes;
 using ExcelDataReader;
 
 namespace GCPVConfig
@@ -61,7 +64,79 @@ namespace GCPVConfig
             return null;
         }
 
+        public class CsvEntry
+        {
+            public string Affiliates { get; set; }
+            
+            [Name("First Name")]
+            public string FirstName { get; set; }
+
+            [Name("Last Name")]
+            public string LastName { get; set; }
+
+            [Name("Membership Numbers")]
+            public string MemberNumber { get; set; }
+
+            public string Sex { get; set; }
+
+            public string DOB { get; set; }
+        }
+
         public static List<Inscription> LoadInscription(string path)
+        {
+            FileInfo fi = new FileInfo(path);
+            if(fi.Extension == ".xlsx")
+            {
+                return LoadFromExcel(path);
+            }
+            else if(fi.Extension == ".csv")
+            {
+                return LoadFromCsv(path);
+            }
+            return null;
+        }
+
+        private static List<Inscription> LoadFromCsv(string path)
+        {
+            List<Inscription> inscriptions = new List<Inscription>();
+
+            using (var reader = new StreamReader(path))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                var records = csv.GetRecords<CsvEntry>();
+                try
+                {
+                    foreach (var r in records)
+                    {
+                        string club_abvr = ExtractClubAbreviation(r.Affiliates.Trim());
+                        string memNumber = r.MemberNumber.Trim();
+
+                        if (club_abvr != null)
+                        {
+                            Inscription inscription = new Inscription(
+                                r.FirstName.Trim(),
+                                r.LastName.Trim(),
+                                r.Sex.Trim().ToLower() == "male" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
+                                DateOnly.ParseExact(r.DOB, "yyyy/MM/dd", CultureInfo.InvariantCulture),
+                                memNumber,
+                                club_abvr
+                            );
+                            inscriptions.Add(inscription);
+                        }
+                        else
+                        {
+                            //throw new Exception("Un patineur n'a pas de club affilié. Corrigez avant de continuer");
+                        }
+                    }
+                }
+                catch(CsvHelper.MissingFieldException)
+                { }
+            }
+
+            return inscriptions;
+        }
+
+        private static List<Inscription> LoadFromExcel(string path)
         {
             List<Inscription> inscriptions = new List<Inscription>();
 

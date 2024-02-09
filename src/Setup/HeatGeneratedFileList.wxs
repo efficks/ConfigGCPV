@@ -5,6 +5,9 @@
                 <Component Id="cmp1hr3Ri_NSV3z4HQ0ZiyuMcHPvNs" Guid="*">
                     <File Id="filbHWcbpghgBCsj6w5Z19dt4RlAt8" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\AgeCalculator.dll" />
                 </Component>
+                <Component Id="cmpRwQoe5th82YBcN0q11pzJZoVJ04" Guid="*">
+                    <File Id="filmcoV3eswemZx.zSHo0iUSd0_yG4" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\CsvHelper.dll" />
+                </Component>
                 <Component Id="cmpZxck9BvEc2Cbwg4wZMr7_pjVvh0" Guid="*">
                     <File Id="filRlnPyVdkgecT3pRnXfzyYEFcsx8" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\ExcelDataReader.dll" />
                 </Component>
@@ -49,6 +52,9 @@
                 </Component>
                 <Component Id="cmpatTcLTGjPQ8I191AaX9FgDyYu2I" Guid="*">
                     <File Id="filUNChYfYiKb7wDfqTkvb.UDM4ZQM" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Drawing.Common.dll" />
+                </Component>
+                <Component Id="cmpLoktHtA05Oeu9WKpXCpLYBACR9c" Guid="*">
+                    <File Id="filDL2rnJHBxirJjsl0d73GQjlb_Gs" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Linq.Async.dll" />
                 </Component>
                 <Component Id="cmpy1D6FKVU58DD3aSEXaUi40QwfAo" Guid="*">
                     <File Id="filzGmQ_uYtt8Ko6Cy0sCDBkSUowjs" KeyPath="yes" Source="$(var.HarvestPath)\net6.0-windows\System.Security.Cryptography.ProtectedData.dll" />
@@ -100,6 +106,7 @@
     <Fragment>
         <ComponentGroup Id="HeatGenerated">
             <ComponentRef Id="cmp1hr3Ri_NSV3z4HQ0ZiyuMcHPvNs" />
+            <ComponentRef Id="cmpRwQoe5th82YBcN0q11pzJZoVJ04" />
             <ComponentRef Id="cmpZxck9BvEc2Cbwg4wZMr7_pjVvh0" />
             <ComponentRef Id="cmpidrS3f3Eo2TX8A7YX4EaPHveZCA" />
             <ComponentRef Id="cmpUPSY0tEJRKwXi_cSPLZHhb..C_k" />
@@ -115,6 +122,7 @@
             <ComponentRef Id="cmp2jwVJw3TFWkFYbxLDnkSSfutw5g" />
             <ComponentRef Id="cmp9rc.oydTwTYu5nQYE9V6GZMQgGw" />
             <ComponentRef Id="cmpatTcLTGjPQ8I191AaX9FgDyYu2I" />
+            <ComponentRef Id="cmpLoktHtA05Oeu9WKpXCpLYBACR9c" />
             <ComponentRef Id="cmpy1D6FKVU58DD3aSEXaUi40QwfAo" />
             <ComponentRef Id="cmperT6oMRTfZVB2EWx.aGMvp.5VG0" />
             <ComponentRef Id="cmpAEzNMm9p2gLkE8Rdam.8h.0seQ4" />

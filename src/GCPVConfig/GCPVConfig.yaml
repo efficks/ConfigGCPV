@@ -19,7 +19,7 @@ typecompetition:
   - name: "C l'fun"
     numero_bonnet: true
     max_pat: 5
-    min_derniere: 1
+    min_derniere: 2
   - name: "Liliane-Lambert"
     numero_bonnet: false
     max_pat: 15

@@ -384,31 +384,44 @@ namespace GCPVConfig
 
                 Dictionary<string, List<Patineur>> groups = new Dictionary<string, List<Patineur>>();
 
-                foreach(string categoryname in patineurParCategoye.Keys)
+                
+
+                foreach (string categoryname in patineurParCategoye.Keys)
                 {
-                    int i = 1;
                     List<Patineur> currentGroup = new List<Patineur>();
-                    groups.Add(String.Format(categoryname, i),currentGroup);
+                    
+                    int i = 1;
+                    string currentGroupName = String.Format(categoryname, i);
+                    groups.Add(currentGroupName, currentGroup);
 
                     var patineurcategory = patineurParCategoye[categoryname];
                     patineurcategory.Sort((p1, p2) => p1.GetClassement(v).CompareTo(p2.GetClassement(v)));
 
                     while(patineurcategory.Count > 0)
                     {
+                        
+
+                        if(currentGroup.Count >= typeCompeConfig.MaxPatineur && patineurcategory.Count >= typeCompeConfig.MinPatineurDerniere)
+                        {
+                            ProgressMessage?.Report(String.Format("Ajout du groupe {0} - {1} patineurs", currentGroupName, currentGroup.Count));
+
+                            i++;
+                            currentGroup = new List<Patineur>();
+                            currentGroupName = String.Format(categoryname, i);
+                            groups.Add(currentGroupName, currentGroup);
+                            
+                        }
                         Patineur p = patineurcategory[0];
                         patineurcategory.RemoveAt(0);
 
-                        if(currentGroup.Count >= 15 && patineurcategory.Count>8)
-                        {
-                            i++;
-                            currentGroup = new List<Patineur>();
-                            groups.Add(String.Format(categoryname, i), currentGroup);
-                        }
                         currentGroup.Add(p);
                     }
+                    ProgressMessage?.Report(String.Format("Ajout du groupe {0} - {1} patineurs", currentGroupName, currentGroup.Count));
                 }
 
+               
                 pat.AjoutGroup(groups, competitionToImport);
+                ProgressMessage?.Report(String.Format("{0} groupes créés",groups.Count));
 
                 ProgressMessage?.Report("Fin du regroupement");
             });
