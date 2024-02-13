@@ -49,12 +49,12 @@ namespace GCPVConfig
         public IInscription.SexEnum Sex { get; }
         public DateOnly BirthDate { get; }
         public string? MemberNumber { get; set; }
-        public string Club { get; }
+        public string Club { get; set; }
 
         public int NoCasque { get; set; }
 
-        private static Regex REGEX_CLUB_ABRV = new Regex(@"^.+\((\w+)\)$");
-        private static string? ExtractClubAbreviation(in string clubdata)
+        //private static Regex REGEX_CLUB_ABRV = new Regex(@"^.+\((\w+)\)$");
+        /*private static string? ExtractClubAbreviation(in string clubdata)
         {
             Match m = REGEX_CLUB_ABRV.Match(clubdata);
             if(m.Success)
@@ -62,7 +62,7 @@ namespace GCPVConfig
                 return m.Groups[1].Value;
             }
             return null;
-        }
+        }*/
 
         public class CsvEntry
         {
@@ -108,25 +108,17 @@ namespace GCPVConfig
                 {
                     foreach (var r in records)
                     {
-                        string club_abvr = ExtractClubAbreviation(r.Affiliates.Trim());
                         string memNumber = r.MemberNumber.Trim();
 
-                        if (club_abvr != null)
-                        {
-                            Inscription inscription = new Inscription(
-                                r.FirstName.Trim(),
-                                r.LastName.Trim(),
-                                r.Sex.Trim().ToLower() == "male" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
-                                DateOnly.ParseExact(r.DOB, "yyyy/MM/dd", CultureInfo.InvariantCulture),
-                                memNumber,
-                                club_abvr
-                            );
-                            inscriptions.Add(inscription);
-                        }
-                        else
-                        {
-                            //throw new Exception("Un patineur n'a pas de club affilié. Corrigez avant de continuer");
-                        }
+                        Inscription inscription = new Inscription(
+                            r.FirstName.Trim(),
+                            r.LastName.Trim(),
+                            r.Sex.Trim().ToLower() == "male" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
+                            DateOnly.ParseExact(r.DOB, "yyyy/MM/dd", CultureInfo.InvariantCulture),
+                            memNumber,
+                            r.Affiliates is null ? "" : r.Affiliates.Trim()
+                        );
+                        inscriptions.Add(inscription);
                     }
                 }
                 catch(CsvHelper.MissingFieldException)
@@ -172,10 +164,10 @@ namespace GCPVConfig
                         }
 
                         string? aff = reader.GetString(headers["Affiliates"]);
-                        string? club_abvr = null;
+                        string? club_abvr = "";
                         if (aff != null)
                         {
-                            club_abvr = ExtractClubAbreviation(reader.GetString(headers["Affiliates"]).Trim());
+                            club_abvr = reader.GetString(headers["Affiliates"]).Trim();
                         }
 
                         var numberType = reader.GetFieldType(headers["Membership Numbers"]);
@@ -189,22 +181,15 @@ namespace GCPVConfig
                             memNumber = reader.GetDouble(headers["Membership Numbers"]).ToString();
                         }
 
-                        if (club_abvr != null)
-                        {
-                            Inscription inscription = new Inscription(
-                                reader.GetString(headers["First Name"]).Trim(),
-                                reader.GetString(headers["Last Name"]).Trim(),
-                                reader.GetString(headers["Sex"]).Trim().ToLower() == "male" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
-                                DateOnly.FromDateTime(reader.GetDateTime(headers["DOB"])),
-                                memNumber,
-                                club_abvr
-                            );
-                            inscriptions.Add(inscription);
-                        }
-                        else
-                        {
-                            throw new Exception("Un patineur n'a pas de club affilié. Corrigez avant de continuer");
-                        }
+                        Inscription inscription = new Inscription(
+                            reader.GetString(headers["First Name"]).Trim(),
+                            reader.GetString(headers["Last Name"]).Trim(),
+                            reader.GetString(headers["Sex"]).Trim().ToLower() == "male" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
+                            DateOnly.FromDateTime(reader.GetDateTime(headers["DOB"])),
+                            memNumber,
+                            club_abvr
+                        );
+                        inscriptions.Add(inscription);
                     }
                 }
             }

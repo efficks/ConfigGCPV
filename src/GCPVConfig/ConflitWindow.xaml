@@ -24,7 +24,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GCPVConfig"
         mc:Ignorable="d"
-        Title="MainWindow" Height="245" Width="513">
+        Title="MainWindow" Height="245" Width="513"
+        WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

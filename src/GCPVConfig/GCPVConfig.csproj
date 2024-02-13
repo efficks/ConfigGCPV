@@ -38,7 +38,7 @@
     <Platforms>x64;x86</Platforms>
 	<WarningLevel>6</WarningLevel>
 	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	  <VersionPrefix>1.1.0</VersionPrefix>
+	  <!--<VersionPrefix>1.1.0</VersionPrefix>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -92,6 +92,12 @@
     <PackageReference Include="System.Data.OleDb" Version="7.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="SelectClub.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

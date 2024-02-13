@@ -204,6 +204,7 @@ namespace GCPVConfig
             importer.ProgressMessage = progressMessage;
             importer.ConflictFound += ConflictFound;
             importer.SelectCompetition += SelectCompetition;
+            importer.SelectClub += SelectClub;
             await importer.Import();
 
             btn_launchImport.IsEnabled = true;
@@ -239,6 +240,29 @@ namespace GCPVConfig
                 }
             });
         }
+        private void SelectClub(Object sender, SelectClubEventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    e.Choice = null;
+                    GCPVConfig.SelectClub selectWindow = new SelectClub(e.Clubs,e.WrongName);
+                    selectWindow.Owner = Window.GetWindow(this);
+
+                    var result = selectWindow.ShowDialog();
+                    if(result is not null && result == true)
+                    {
+                        e.Choice = selectWindow.Choice;
+                    }
+                }
+                finally
+                {
+                    e.MRE.Set();
+                }
+            });
+        }
+
         private void ConflictFound(Object sender, ConflictFoundEventArgs e)
         {
             this.Dispatcher.Invoke(() =>
@@ -246,6 +270,8 @@ namespace GCPVConfig
                 try
                 {
                     ConflitWindow cw = new ConflitWindow(e.Inscription, e.Patineur);
+                    cw.Owner = Window.GetWindow(this);
+
                     var result = cw.ShowDialog();
                     if (result is not null && result == true)
                     {

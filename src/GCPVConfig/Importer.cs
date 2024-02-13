@@ -44,6 +44,8 @@ namespace GCPVConfig
         }
     }
 
+
+
     internal class Groupe
     {
         public Groupe(string nom)
@@ -72,8 +74,32 @@ namespace GCPVConfig
         }
     }
 
+    internal class SelectClubEventArgs : EventArgs
+    {
+        public SelectClubEventArgs()
+        {
+            WrongName = "";
+            Clubs = new List<Club>();
+            Choice = null;
+        }
+        
+        public string WrongName { get; set; }
+
+        public List<FichierPAT.Club> Clubs { get; set; }
+
+        public FichierPAT.Club? Choice { get; set; }
+
+        private ManualResetEvent mre = new ManualResetEvent(false);
+
+        public ManualResetEvent MRE
+        {
+            get { return mre; }
+        }
+    }
+
     internal delegate void ConflictFoundEventHandler(Object sender, ConflictFoundEventArgs e);
     internal delegate void SelectCompetitionEventHandler(Object sender, SelectCompetitionEventArgs e);
+    internal delegate void SelectClubEventHandler(Object sender, SelectClubEventArgs e);
 
     internal class Importer
     {
@@ -105,8 +131,21 @@ namespace GCPVConfig
             return e.Choice;
         }
 
+        protected Club? OnSelectClub(string wrongclub, List<FichierPAT.Club> listClub)
+        {
+            SelectClubEventArgs e = new SelectClubEventArgs
+            {
+                WrongName = wrongclub,
+                Clubs = listClub
+            };
+            SelectClub?.Invoke(this, e);
+            e.MRE.WaitOne();
+            return e.Choice;
+        }
+
         public event ConflictFoundEventHandler ConflictFound;
         public event SelectCompetitionEventHandler SelectCompetition;
+        public event SelectClubEventHandler SelectClub;
 
         private string mInscriptionPath;
         private string mPATPath;
@@ -121,6 +160,35 @@ namespace GCPVConfig
             mPATPath = patPath;
             mConfiguration = configuration;
             mTypeCompetitionName = typeCompetitionName;
+        }
+
+        private static Regex REGEX_CLUB_ABRV = new Regex(@"^.+\((\w+)\)$");
+        private Dictionary<string, FichierPAT.Club> wrongClubMapping = new Dictionary<string, FichierPAT.Club>();
+
+        private Club? DetectClub(string name, FichierPAT pat)
+        {
+            Match m = REGEX_CLUB_ABRV.Match(name);
+            if (m.Success)
+            {
+                string abr = m.Groups[1].Value;
+                Club? club = pat.GetClubByAbr(abr);
+                if(club != null)
+                {
+                    return club;
+                }
+            }
+
+            if(wrongClubMapping.ContainsKey(name))
+            {
+                return wrongClubMapping[name];
+            }
+
+            Club? selectedClub = this.OnSelectClub(name, pat.GetClubs());
+            if(selectedClub is not null)
+            {
+                wrongClubMapping[name] = selectedClub;
+            }
+            return selectedClub;
         }
 
         public async Task Import()
@@ -154,6 +222,18 @@ namespace GCPVConfig
                     ProgressMessage?.Report("Erreur lors de l'ouverture du fichier d'inscription");
                     ProgressMessage?.Report(e.Message);
                     return;
+                }
+
+                foreach(Inscription i in inscriptions)
+                {
+                    Club? detectedClub = DetectClub(i.Club, pat);
+                    if(detectedClub == null)
+                    {
+                        ProgressMessage?.Report(String.Format("Impossible de détecter le club du patineur {0} {1}",i.FirstName, i.LastName));
+                        return;
+                    }
+
+                    i.Club = detectedClub.Abreviation;
                 }
 
                 var typeCompeConfig = mConfiguration.GetTypeConfig(mTypeCompetitionName);

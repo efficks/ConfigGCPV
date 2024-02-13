@@ -61,6 +61,20 @@ namespace GCPVConfig
                 return Nom;
             }
         }
+
+        public class Club
+        {
+            public Club(int no, string nom, string abreviation)
+            {
+                Number = no;
+                Name = nom;
+                Abreviation = abreviation;
+            }
+
+            public int Number { get; set; }
+            public string Name { get; set; }
+            public string Abreviation { get; set; }
+        }
         public class Patineur: IInscription
         {
             private FichierPAT fichierPat;
@@ -656,5 +670,60 @@ namespace GCPVConfig
                 }
             }
             }
+
+        internal List<Club> GetClubs()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                var cmd = new OleDbCommand("SELECT NoClub, [Nom du club], Abreviation FROM TClubs", conn);
+
+                var reader = cmd.ExecuteReader();
+
+                List<Club> clubs = new List<Club>();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        Club c = new Club(
+                            reader.GetInt32(0),
+                            reader.GetString(1),
+                            reader.GetString(2)
+                        );
+                        clubs.Add(c);
+                    }
+                }
+
+                return clubs;
+            }
+        }
+
+        internal Club? GetClubByAbr(string abr)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                var cmd = new OleDbCommand("SELECT TOP 1 NoClub, [Nom du club], Abreviation FROM TClubs WHERE Abreviation=@abr", conn);
+                cmd.Parameters.AddWithValue("@abr", abr);
+
+                var reader = cmd.ExecuteReader();
+
+                List<Club> clubs = new List<Club>();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    Club c = new Club(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2)
+                    );
+                    return c;
+                }
+
+                return null;
+            }
+        }
     }
 }

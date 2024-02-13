@@ -24,8 +24,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GCPVConfig"
         mc:Ignorable="d"
-        Title="GCPV Config" Height="500" Width="700">
-    <Grid>
+        Title="GCPV Config" Height="500" Width="700"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="3,3,3,3">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -62,7 +63,7 @@
             </ComboBox>
             <Button Grid.Column="2" Content="..." Click="Button_Click_2"/>
         </Grid>
-        <TabControl Grid.Row="3">
+        <TabControl Grid.Row="3" Margin="10,10,10,10">
             <TabItem Header="Importation">
                 <Grid>
                     <Grid.RowDefinitions>

@@ -17,29 +17,31 @@
 
     François-Xavier Choinière, fx@efficks.com
 -->
-<Window x:Class="GCPVConfig.SelectCompe"
+<Window x:Class="GCPVConfig.SelectClub"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GCPVConfig"
         mc:Ignorable="d"
-        Title="Sélecton de la compétition" Height="200" Width="250">
-    <Grid Margin="3,3,3,3">
+        Title="Club inconnu" Height="290" Width="410"
+        WindowStartupLocation="CenterOwner">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition  />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0"  TextWrapping="Wrap" Text="Dans quelle compétition souhaitez-vous importer les patineurs?" />
-        <ListBox Grid.Row="1" x:Name="list_competitions" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="list_competitions_SelectionChanged" />
-        <Grid Grid.Row="2">
+        <TextBlock x:Name="txtMessage" TextWrapping="Wrap" Grid.Row="0" Margin="5,5,5,5"><Run Language="fr-ca" Text="&lt;message&gt;"/></TextBlock>
+        <ListBox x:Name="list_clubs" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="list_competitions_SelectionChanged" Margin="5,5,5,5" MouseDoubleClick="list_clubs_MouseDoubleClick" />
+        <Grid Grid.Row="2" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btn_ok" Grid.Column="0" Content="Ok" Margin="3,3,3,3" HorizontalAlignment="Right" VerticalAlignment="Center" IsDefault="True" Click="btn_ok_Click" IsEnabled="False"/>
-            <Button x:Name="btn_annuler" Grid.Column="1" Content="Annuler" Margin="3,3,3,3" VerticalAlignment="Center" HorizontalAlignment="Left" IsCancel="True" Click="btn_annuler_Click"/>
+            <Button x:Name="btn_ok" Content="Ok" Grid.Column="0" Margin="3,3,3,3" VerticalAlignment="Center" HorizontalAlignment="Right" IsDefault="True" Click="btn_ok_Click" IsEnabled="False"/>
+            <Button x:Name="btn_annuler" Content="Annuler" Grid.Column="1" Margin="3,3,3,3" IsCancel="True" VerticalAlignment="Center" HorizontalAlignment="Left" Click="btn_annuler_Click"/>
         </Grid>
+
     </Grid>
 </Window>
