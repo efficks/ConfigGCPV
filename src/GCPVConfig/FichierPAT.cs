@@ -46,15 +46,19 @@ namespace GCPVConfig
         {
             private int mId;
             private string mNom;
+            private Club mClub;
 
-            public Competition(string nom, int id)
+            public Competition(string nom, int id, Club c)
             {
                 mId = id;
                 mNom = nom;
+                mClub = c;
             }
 
             public string Nom { get { return mNom; } }
             public int Id { get { return mId; } }
+
+            public Club Club { get { return mClub; } }
 
             public override string ToString()
             {
@@ -547,7 +551,7 @@ namespace GCPVConfig
             {
                 conn.Open();
 
-                var cmd = new OleDbCommand("SELECT NoCompetition, Lieu FROM TCompetition", conn);
+                var cmd = new OleDbCommand("SELECT NoCompetition, Lieu, TClubs.NoClub, [Nom du club] as club, Abreviation AS abr FROM TCompetition INNER JOIN TClubs ON TClubs.NoClub = TCompetition.NoClub", conn);
 
                 var reader = cmd.ExecuteReader();
 
@@ -556,9 +560,15 @@ namespace GCPVConfig
                 {
                     while(reader.Read())
                     {
+                        Club club = new Club(
+                            reader.GetInt32(2),
+                            reader.GetString(3),
+                            reader.GetString(4)
+                        );
                         Competition compe = new Competition(
                             reader.GetString(1),
-                            reader.GetInt32(0)
+                            reader.GetInt32(0),
+                            club
                         );
                         competitions.Add(compe);
                     }
@@ -723,6 +733,31 @@ namespace GCPVConfig
                 }
 
                 return null;
+            }
+        }
+
+        internal List<string> GetGroupeByCompetition(int competid)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                var cmd = new OleDbCommand("SELECT Groupe FROM TGroupes_Compe WHERE NoCompetition=@compet ORDER BY IDGroupesCompe", conn);
+                cmd.Parameters.AddWithValue("@compet", competid);
+
+                var reader = cmd.ExecuteReader();
+
+                List<string> groupes = new List<string>();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        reader.Read();
+                        groupes.Add(reader.GetString(0));
+                    }
+                }
+
+                return groupes;
             }
         }
     }

@@ -17,13 +17,15 @@
 
     François-Xavier Choinière, fx@efficks.com
 */
-using GCPVConfig;
+using GCPVConfig.Minute;
 using Microsoft.Win32;
+using QuestPDF.Infrastructure;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.Design;
 using System.Windows.Input;
 
 namespace GCPVConfig
@@ -45,6 +47,17 @@ namespace GCPVConfig
         }
     }
 
+    public class CompetitionComboItem
+    {
+        public string Text { get; set; }
+        public FichierPAT.Competition Value { get; set; }
+
+        public override string ToString()
+        {
+            return Value.Nom;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -56,6 +69,7 @@ namespace GCPVConfig
 
         public MainWindow()
         {
+            QuestPDF.Settings.License = LicenseType.Community;
             InitializeComponent();
             ValidImportation();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -143,7 +157,11 @@ namespace GCPVConfig
 
                         foreach (var compe in competitions)
                         {
-                            combo_competition_list.Items.Add(compe.Nom);
+                            combo_competition_list.Items.Add(new CompetitionComboItem
+                            {
+                                Text = compe.Nom,
+                                Value = compe
+                            });
                         }
 
                         var classements = patfile.GetClassementName();
@@ -225,14 +243,7 @@ namespace GCPVConfig
             {
                 try
                 {
-                    e.Choice = null;
-                    foreach (var c in e.Competition)
-                    {
-                        if (c.Nom == combo_competition_list.SelectedItem.ToString())
-                        {
-                            e.Choice = c;
-                        }
-                    }
+                    e.Choice = ((CompetitionComboItem)combo_competition_list.SelectedValue).Value;
                 }
                 finally
                 {
@@ -302,7 +313,25 @@ namespace GCPVConfig
 
         private void btn_launchMinute_Click(object sender, RoutedEventArgs e)
         {
+            Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
+            
+            FichierPAT pat = FichierPAT.Open(txt_patPath.Text);
 
+            Minuteur.MinuteParameters parameters = new Minuteur.MinuteParameters
+            {
+                VerifLame = TimeOnly.Parse(txt_time_verif_lame.Text),
+                DebutRechauffements = TimeOnly.Parse(txt_warmup_time.Text),
+                DureeRechauffements = TimeSpan.FromMinutes(Int32.Parse(txt_warmup_duration.Text)),
+                RencontreEntraineur = TimeOnly.Parse(txt_meeting_time.Text),
+                DebutCourse = TimeOnly.Parse(txt_race_time.Text),
+                DureeResurfacage = TimeSpan.FromMinutes(Int32.Parse(txt_resurfacage_duration.Text)),
+                DureeDiner = TimeSpan.FromMinutes(Int32.Parse(txt_diner_time.Text))
+            };
+
+            Minuteur m = new Minuteur(pat, ((CompetitionComboItem)combo_competition_list.SelectedValue).Value, parameters);
+            m.ProgressMessage = progressMessage;
+
+            m.Generate();
         }
 
         private void combo_evenement_type_SelectionChanged(object sender, SelectionChangedEventArgs e)

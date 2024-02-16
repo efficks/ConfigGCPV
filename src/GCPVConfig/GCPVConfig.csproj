@@ -89,6 +89,7 @@
     <PackageReference Include="CsvHelper" Version="30.1.0" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="MdXaml" Version="1.25.0" />
+    <PackageReference Include="QuestPDF" Version="2023.12.5" />
     <PackageReference Include="System.Data.OleDb" Version="7.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.0" />
