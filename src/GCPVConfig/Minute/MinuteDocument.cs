@@ -62,18 +62,29 @@ namespace GCPVConfig.Minute
 
     }
 
-    internal class VerifLame : Event
+    internal class NoGroupEvent : Event
     {
-        public VerifLame(TimeOnly debut, TimeSpan duree):
+        private string mNom;
+        public NoGroupEvent(string name, TimeOnly debut, TimeSpan duree):
             base(debut, duree)
         {
-
+            mNom = name;
         }
 
         public override void Compose(TableDescriptor table)
         {
             table.Cell().ValueCell().Element(Event.Block).Text(Debut.ToShortTimeString()).FontFamily("Times New Roman").FontSize(10);
-            table.Cell().ColumnSpan(5).ValueCell().Element(Event.Block).Text("Vérification des lames").FontFamily("Times New Roman").FontSize(10);
+            if (Duree == TimeSpan.Zero)
+            {
+                table.Cell().ColumnSpan(5).ValueCell().Element(Event.Block).Text(mNom).FontFamily("Times New Roman").FontSize(10);
+            }
+            else
+            {
+                table.Cell().ColumnSpan(4).ValueCell().Element(Event.Block).Text(mNom).FontFamily("Times New Roman").FontSize(10);
+                table.Cell().ValueCell().Element(Event.Block).Text(
+                    $"{Convert.ToInt32(Duree.Hours)}:{Duree.Minutes.ToString().PadLeft(2, '0')}"
+                ).FontFamily("Times New Roman").FontSize(10);
+            }
         }
 
     }
@@ -101,7 +112,7 @@ namespace GCPVConfig.Minute
             table.Cell().ValueCell().Element(Event.Block).Text(mNombre).FontFamily("Times New Roman").FontSize(10);
             table.Cell().ValueCell().Element(Event.Block).Text(mQualifCrit).FontFamily("Times New Roman").FontSize(10);
             table.Cell().ValueCell().Element(Event.Block).Text(
-                $"{Convert.ToInt32(Math.Floor(Duree.TotalHours))}:{Duree.TotalMinutes.ToString().PadLeft(2,'0')}"
+                $"{Convert.ToInt32(Duree.Hours)}:{Duree.Minutes.ToString().PadLeft(2,'0')}"
             ).FontFamily("Times New Roman").FontSize(10);
         }
 

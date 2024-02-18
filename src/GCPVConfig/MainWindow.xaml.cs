@@ -325,7 +325,10 @@ namespace GCPVConfig
                 RencontreEntraineur = TimeOnly.Parse(txt_meeting_time.Text),
                 DebutCourse = TimeOnly.Parse(txt_race_time.Text),
                 DureeResurfacage = TimeSpan.FromMinutes(Int32.Parse(txt_resurfacage_duration.Text)),
-                DureeDiner = TimeSpan.FromMinutes(Int32.Parse(txt_diner_time.Text))
+                DureeDiner = TimeSpan.FromMinutes(Int32.Parse(txt_diner_time.Text)),
+                BlocAvantDiner = 3,
+                SecondesParTour = 16,
+                SecondesEntreeSortie = 60
             };
 
             Minuteur m = new Minuteur(pat, ((CompetitionComboItem)combo_competition_list.SelectedValue).Value, parameters);

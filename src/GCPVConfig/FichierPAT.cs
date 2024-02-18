@@ -708,7 +708,6 @@ namespace GCPVConfig
                 return clubs;
             }
         }
-
         internal Club? GetClubByAbr(string abr)
         {
             using (var conn = GetConnection())
@@ -752,13 +751,77 @@ namespace GCPVConfig
                 {
                     while (reader.Read())
                     {
-                        reader.Read();
                         groupes.Add(reader.GetString(0));
                     }
                 }
 
                 return groupes;
             }
+        }
+
+        internal class Course
+        {
+            public int Sequence { get; set; }
+            public string Groupe { get; set; }
+            public string CritereQualif { get; set; }
+            public int NbPatineur { get; set; }
+            public int NbVagues { get; set; }
+            public int LongueurEpruve { get; set; }
+            public int NoBloc { get; set; }
+            public bool EstQualif { get; set; }
+        }
+
+        internal List<Course> GetProgrammeCourse(int noCompet)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                var cmd = new OleDbCommand(@"SELECT TProg_Courses.SeqQualif AS Seq, TProg_Courses.Groupe, CritVagueAQuart,
+                    NbPatineurs, NbQualif AS NbVagues, TDistances_Standards.LongueurEpreuve AS LongueurEpreuve, NoBLoc, 1 AS Qualif
+                    FROM (TProg_Courses 
+                    INNER JOIN TDistances_Compe ON TDistances_Compe.CleDistancesCompe=TProg_Courses.CleDistancesCompe)
+                    INNER JOIN TDistances_Standards ON TDistances_Standards.NoDistance=TDistances_Compe.NoDistance
+                    WHERE TProg_Courses.NoCompetition=@nocompetA AND TProg_Courses.SeqQualif>0 AND SiDistCourue=True
+
+                    UNION
+
+                    SELECT TProg_Courses.SeqFinale AS Seq, TProg_Courses.Groupe, '' AS CritVagueAQuart,
+                    NbPatineurs, NbFInale AS NbVagues, TDistances_Standards.LongueurEpreuve AS LongueurEpreuve, NoBLoc, 0 AS Qualif
+                    FROM (TProg_Courses 
+                    INNER JOIN TDistances_Compe ON TDistances_Compe.CleDistancesCompe=TProg_Courses.CleDistancesCompe)
+                    INNER JOIN TDistances_Standards ON TDistances_Standards.NoDistance=TDistances_Compe.NoDistance
+                    WHERE TProg_Courses.NoCompetition=@nocompetB AND TProg_Courses.SeqFinale>0 AND SiDistCourue=True
+
+                    ORDER BY Seq", conn);
+                cmd.Parameters.AddWithValue("@nocompetA", noCompet);
+                cmd.Parameters.AddWithValue("@nocompetB", noCompet);
+
+                var reader = cmd.ExecuteReader();
+
+                List<Course> groupes = new List<Course>();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        groupes.Add(
+                            new Course()
+                            {
+                                Sequence = reader.GetInt16(0),
+                                Groupe = reader.GetString(1),
+                                CritereQualif = reader.GetString(2),
+                                NbPatineur = reader.GetInt16(3),
+                                NbVagues = reader.GetInt16(4),
+                                LongueurEpruve = reader.GetInt32(5),
+                                NoBloc = reader.GetInt16(6),
+                                EstQualif = reader.GetInt32(7)>0
+                            }
+                        );
+                    }
+                }
+                return groupes;
+            }
+
         }
     }
 }
