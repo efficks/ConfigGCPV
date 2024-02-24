@@ -85,7 +85,7 @@
     <PackageReference Include="WixToolset.Netfx.wixext" Version="4.0.3" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="WixToolset.Sdk" Version="4.0.3" />
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeBuild" DependsOnTargets="ResolveReferences">
     <HeatDirectory Directory="..\GCPVConfig\bin\$(Platform)\$(Configuration)\net6.0-windows" PreprocessorVariable="var.HarvestPath" OutputFile="HeatGeneratedFileList.wxs" ComponentGroupName="HeatGenerated" DirectoryRefId="INSTALLFOLDER" AutogenerateGuids="true" ToolPath="$(WixToolPath)" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" />
   </Target>
 </Project>
