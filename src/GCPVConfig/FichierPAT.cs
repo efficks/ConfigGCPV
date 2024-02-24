@@ -47,18 +47,22 @@ namespace GCPVConfig
             private int mId;
             private string mNom;
             private Club mClub;
+            private DateOnly mDate;
 
-            public Competition(string nom, int id, Club c)
+            public Competition(string nom, int id, Club c, DateOnly date)
             {
                 mId = id;
                 mNom = nom;
                 mClub = c;
+                mDate = date;
             }
 
             public string Nom { get { return mNom; } }
             public int Id { get { return mId; } }
 
             public Club Club { get { return mClub; } }
+
+            public DateOnly Date { get { return mDate; } }
 
             public override string ToString()
             {
@@ -193,9 +197,9 @@ namespace GCPVConfig
             Load();
         }
 
-        private void Load()
+        private async void Load()
         {
-            foreach(Patineur patineur in GetAllPatineurs())
+            foreach(Patineur patineur in await GetAllPatineurs())
             {
                 if(patineur.MemberNumber is null)
                 {
@@ -248,49 +252,53 @@ namespace GCPVConfig
             return classements;
         }
 
-        private List<Patineur> GetAllPatineurs()
+        private async Task<List<Patineur>> GetAllPatineurs()
         {
-            using (var conn = GetConnection())
+            List<Patineur> patineurs = new List<Patineur>();
+
+            await Task.Run(() =>
             {
-                conn.Open();
-                OleDbCommand cmd = new OleDbCommand(@"SELECT NoPatineur, Prenom, TPatineurs.Nom, [Date de naissance] AS DOB, Sexe, Division, TPatineurs.NoCategorie, TPatineurs.NoClub, Classement, CategCalc, CodePat, Abreviation, TCategorie.Nom
+                using (var conn = GetConnection())
+                {
+                    conn.Open();
+                    OleDbCommand cmd = new OleDbCommand(@"SELECT NoPatineur, Prenom, TPatineurs.Nom, [Date de naissance] AS DOB, Sexe, Division, TPatineurs.NoCategorie, TPatineurs.NoClub, Classement, CategCalc, CodePat, Abreviation, TCategorie.Nom
                     FROM (TPatineurs
                     INNER JOIN TClubs ON TPatineurs.NoClub=TClubs.NoClub)
                     INNER JOIN TCategorie ON TPatineurs.NoCategorie=TCategorie.NoCategorie;", conn);
-                var reader = cmd.ExecuteReader();
+                    var reader = cmd.ExecuteReader();
 
-                List<Patineur> patineurs = new List<Patineur>();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    if (reader.HasRows)
                     {
-                        try
+                        while (reader.Read())
                         {
-                            Console.WriteLine(reader.GetString(1));
-                            Console.WriteLine(reader.GetString(2));
-                            var patineur = new Patineur(
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetString(2),
-                                reader.GetString(4).ToLower() == "m" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
-                                DateOnly.FromDateTime(reader.GetDateTime(3)),
-                                reader.GetString(10),
-                                reader.GetString(11),
-                                reader.GetInt32(6),
-                                this
-                            );
-                            patineurs.Add(patineur);
+                            try
+                            {
+                                Console.WriteLine(reader.GetString(1));
+                                Console.WriteLine(reader.GetString(2));
+                                var patineur = new Patineur(
+                                    reader.GetInt32(0),
+                                    reader.GetString(1),
+                                    reader.GetString(2),
+                                    reader.GetString(4).ToLower() == "m" ? IInscription.SexEnum.Male : IInscription.SexEnum.Female,
+                                    DateOnly.FromDateTime(reader.GetDateTime(3)),
+                                    reader.GetString(10),
+                                    reader.GetString(11),
+                                    reader.GetInt32(6),
+                                    this
+                                );
+                                patineurs.Add(patineur);
+                            }
+                            catch (System.InvalidCastException)
+                            {
+                                continue;
+                            }
+
                         }
-                        catch(System.InvalidCastException)
-                        {
-                            continue;
-                        }
-                        
                     }
                 }
-
-                return patineurs;
-            }
+                
+            });
+            return patineurs;
         }
 
         public string GetCategoryNom(int numerocat)
@@ -331,9 +339,9 @@ namespace GCPVConfig
 
         private static Regex REGEX_PATINEUR_BAD_STARTS = new Regex(@"^(\d+)\s*(.+)$");
         private static Regex REGEX_PATINEUR_END_NUMBER = new Regex(@"^(.+)\s+(\(\d+\))$");
-        public void FixPatineurNom()
+        public async void FixPatineurNom()
         {
-            List<Patineur> patineurs = GetAllPatineurs();
+            List<Patineur> patineurs = await GetAllPatineurs();
 
             foreach(var patineur in patineurs)
             {
@@ -551,7 +559,7 @@ namespace GCPVConfig
             {
                 conn.Open();
 
-                var cmd = new OleDbCommand("SELECT NoCompetition, Lieu, TClubs.NoClub, [Nom du club] as club, Abreviation AS abr FROM TCompetition INNER JOIN TClubs ON TClubs.NoClub = TCompetition.NoClub", conn);
+                var cmd = new OleDbCommand("SELECT NoCompetition, Lieu, TClubs.NoClub, [Nom du club] as club, Abreviation AS abr, Date FROM TCompetition INNER JOIN TClubs ON TClubs.NoClub = TCompetition.NoClub", conn);
 
                 var reader = cmd.ExecuteReader();
 
@@ -568,7 +576,8 @@ namespace GCPVConfig
                         Competition compe = new Competition(
                             reader.GetString(1),
                             reader.GetInt32(0),
-                            club
+                            club,
+                            DateOnly.FromDateTime(reader.GetDateTime(5))
                         );
                         competitions.Add(compe);
                     }

@@ -47,6 +47,9 @@
 								<Directory Id="dirnet6" Name="net6.0" />
 							</Directory>
 						</Directory>
+            <Directory Id="dirwin64" Name="win-x64">
+              <Directory Id="dirnative" Name="native" />
+            </Directory>
 					</Directory>
 				</Directory>
 			</StandardDirectory>
@@ -80,6 +83,13 @@
 				<File Id="System.Windows.Extensions" Name="System.Windows.Extensions.dll" Source="$(var.GCPVConfig.TargetDir)\System.Windows.Extensions.dll" />
         <File Id="YamlDotNet" Name="YamlDotNet.dll" Source="$(var.GCPVConfig.TargetDir)\YamlDotNet.dll" />
         <File Id="CsvHelper" Name="CsvHelper.dll" Source="$(var.GCPVConfig.TargetDir)\CsvHelper.dll" />
+        <File Id="HarfBuzzSharp" Name="HarfBuzzSharp.dll" Source="$(var.GCPVConfig.TargetDir)\HarfBuzzSharp.dll" />
+        <File Id="QuestPDF" Name="QuestPDF.dll" Source="$(var.GCPVConfig.TargetDir)\QuestPDF.dll" />
+        <File Id="SkiaSharp" Name="SkiaSharp.dll" Source="$(var.GCPVConfig.TargetDir)\SkiaSharp.dll" />
+        <File Id="SkiaSharp.HarfBuzz" Name="SkiaSharp.HarfBuzz.dll" Source="$(var.GCPVConfig.TargetDir)\SkiaSharp.HarfBuzz.dll" />
+        <File Id="System.Linq.Async" Name="System.Linq.Async.dll" Source="$(var.GCPVConfig.TargetDir)\System.Linq.Async.dll" />
+        <File Id="Octokit" Name="Octokit.dll" Source="$(var.GCPVConfig.TargetDir)\Octokit.dll" />
+        <File Id="Semver" Name="Semver.dll" Source="$(var.GCPVConfig.TargetDir)\Semver.dll" />
 				
 				<RemoveFolder Id="CleanUpShortCut" Directory="INSTALLFOLDER" On="uninstall" />
 				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedexe" Type="integer" Value="1" KeyPath="yes" />
@@ -93,13 +103,20 @@
 				<File Id="filA8A25A3FF479D0EB4A03FB44ED91A1D2" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll" />
 				<File Id="filED1E3215B35632E8668249818CD638B9" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Text.Encoding.CodePages.dll" />
 				<File Id="fil0C1538D8A436BB0E14AF6D2C70EF3F5D" Source="$(var.GCPVConfig.TargetDir)\runtimes\win\lib\net6.0\System.Windows.Extensions.dll" />
-				
+        
 				<RemoveFolder Id="remove1" Directory="dirRuntime" On="uninstall" />
 				<RemoveFolder Id="remove2" Directory="dirwin" On="uninstall" />
 				<RemoveFolder Id="remove3" Directory="dirlib" On="uninstall" />
 				<RemoveFolder Id="remove4" Directory="dirnet6" On="uninstall" />
 				<RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedcn" Type="integer" Value="1" KeyPath="yes" />
 			</Component>
+      <Component Id="com_native" Directory="dirnative" Guid="16751F0F-DA30-47E4-897C-8659F806139E">
+        <File Id="fil0C1538D8A436BB0E14AF6D2C70EF3F6D" Source="$(var.GCPVConfig.TargetDir)\runtimes\win-x64\native\libHarfBuzzSharp.dll" />
+        <File Id="fil0C1538D8A436BB0E14AF6D2C70EF3F7D" Source="$(var.GCPVConfig.TargetDir)\runtimes\win-x64\native\libSkiaSharp.dll" />
+        <RemoveFolder Id="remove5" Directory="dirwin64" On="uninstall" />
+        <RemoveFolder Id="remove6" Directory="dirnative" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\GCPVConfig" Name="installedcnative" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
 		</ComponentGroup>
 		
 		<StandardDirectory Id="ProgramMenuFolder">

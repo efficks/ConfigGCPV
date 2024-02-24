@@ -38,7 +38,7 @@
     <Platforms>x64;x86</Platforms>
 	<WarningLevel>6</WarningLevel>
 	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	<VersionPrefix>1.1.0</VersionPrefix>
+	<VersionPrefix>1.2.0</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -89,7 +89,9 @@
     <PackageReference Include="CsvHelper" Version="30.1.0" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="MdXaml" Version="1.25.0" />
+    <PackageReference Include="Octokit" Version="9.1.2" />
     <PackageReference Include="QuestPDF" Version="2023.12.5" />
+    <PackageReference Include="Semver" Version="2.3.0" />
     <PackageReference Include="System.Data.OleDb" Version="7.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.0" />

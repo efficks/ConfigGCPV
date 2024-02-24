@@ -36,8 +36,9 @@ namespace GCPVConfig.Minute
             mParameters = parameters;
         }
 
-        public bool Generate()
+        public bool Generate(string minuteFilePath)
         {
+            ProgressMessage?.Report("Début de la génération de l'horaire minuté");
             List<Event> evenements = new List<Event>();
 
             evenements.Add(
@@ -78,8 +79,23 @@ namespace GCPVConfig.Minute
                 firstRechauf = false;
             }*/
 
+            if(evenements.Last().Fin > mParameters.DebutCourse)
+            {
+                ProgressMessage?.Report("ERREUR");
+                ProgressMessage?.Report($"Le début des courses ({mParameters.DebutCourse}) est avant la fin des réchauffements ({evenements.Last().Fin})");
+                return false;
+            }
+
             evenements.Add(
-                new NoGroupEvent("Réunion des entraîneurs / Resurfaçage", evenements.Last().Fin, TimeSpan.Zero)
+                new NoGroupEvent("Resurfaçage", evenements.Last().Fin, mParameters.DebutCourse-evenements.Last().Fin)
+            );
+
+            evenements.Add(
+                new NoGroupEvent("Réunion des entraîneurs", mParameters.RencontreEntraineur, TimeSpan.Zero)
+            );
+
+            evenements.Add(
+                new NoGroupEvent("Début des courses", mParameters.DebutCourse, TimeSpan.Zero, true)
             );
 
             int currentBloc = 1;
@@ -92,7 +108,7 @@ namespace GCPVConfig.Minute
                     if(course == mParameters.BlocAvantDiner)
                     {
                         evenements.Add(
-                            new NoGroupEvent("Dîner / Resurfaçage", evenements.Last().Fin, mParameters.DureeDiner)
+                            new NoGroupEvent("Dîner / Resurfaçage", evenements.Last().Fin, mParameters.DureeDiner, true)
                         );
                     }
                     else
@@ -129,7 +145,10 @@ namespace GCPVConfig.Minute
             );
 
             MinuteDocument document = new MinuteDocument(mCompetition, evenements);
-            document.GeneratePdf("test.pdf");
+
+            document.GeneratePdf(minuteFilePath);
+
+            ProgressMessage?.Report($"Horaire minuté terminé {minuteFilePath}");
             return true;
         }
     }

@@ -76,7 +76,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="btn_openInscription" Grid.Column="2" Content="Parcourir..." Margin="3,0,3,0" Click="btn_openInscription_Click" VerticalAlignment="Center"/>
+                        <Button x:Name="btn_openInscription" Grid.Column="2" Content="Parcourir..." Margin="3,3,3,0" Click="btn_openInscription_Click" VerticalAlignment="Top"/>
                         <TextBox x:Name="txt_inscriptionPath" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center" Padding="3,0,3,0" TextChanged="txt_inscriptionPath_TextChanged"/>
                         <Label Content="Fichier d'inscription :" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                     </Grid>
@@ -112,12 +112,15 @@
                         <Button Grid.Column="0" x:Name="btn_launchRegroupement" Content="Regrouper les patineurs" VerticalAlignment="Center" HorizontalAlignment="Center" Click="btn_launchRegroupement_Click" IsEnabled="False" />
 
                     </Grid>
-                    
+
                 </Grid>
             </TabItem>
             <TabItem Header="Horaire minuté">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -191,6 +194,33 @@
                         <Label Content="Minutes de diner" VerticalContentAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Row="7">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txt_blocDiner" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center" TextChanged="txt_patPath_TextChanged" Text="3"/>
+                        <Label Content="Nb courses avant dîner" VerticalContentAlignment="Center"/>
+                    </Grid>
+                    <Grid Grid.Row="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txt_secondes_tours" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center" TextChanged="txt_patPath_TextChanged" Text="16"/>
+                        <Label Content="Secondes par tour" VerticalContentAlignment="Center"/>
+                    </Grid>
+                    <Grid Grid.Row="9">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txt_temps_in_out" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center" TextChanged="txt_patPath_TextChanged" Text="60"/>
+                        <Label Content="Secondes d'entrée/sortie" VerticalContentAlignment="Center"/>
+                    </Grid>
+                    <Grid Grid.Row="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>

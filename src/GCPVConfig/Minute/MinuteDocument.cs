@@ -4,6 +4,7 @@ using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,10 +66,12 @@ namespace GCPVConfig.Minute
     internal class NoGroupEvent : Event
     {
         private string mNom;
-        public NoGroupEvent(string name, TimeOnly debut, TimeSpan duree):
+        private bool mBold;
+        public NoGroupEvent(string name, TimeOnly debut, TimeSpan duree, bool bold=false):
             base(debut, duree)
         {
             mNom = name;
+            mBold = bold;
         }
 
         public override void Compose(TableDescriptor table)
@@ -76,14 +79,22 @@ namespace GCPVConfig.Minute
             table.Cell().ValueCell().Element(Event.Block).Text(Debut.ToShortTimeString()).FontFamily("Times New Roman").FontSize(10);
             if (Duree == TimeSpan.Zero)
             {
-                table.Cell().ColumnSpan(5).ValueCell().Element(Event.Block).Text(mNom).FontFamily("Times New Roman").FontSize(10);
+                var component = table.Cell().ColumnSpan(5).ValueCell().Element(Event.Block).Text(mNom).FontFamily("Times New Roman").FontSize(10);
+                if(mBold)
+                {
+                    component.Bold();
+                }
             }
             else
             {
-                table.Cell().ColumnSpan(4).ValueCell().Element(Event.Block).Text(mNom).FontFamily("Times New Roman").FontSize(10);
+                var component = table.Cell().ColumnSpan(4).ValueCell().Element(Event.Block).Text(mNom).FontFamily("Times New Roman").FontSize(10);
                 table.Cell().ValueCell().Element(Event.Block).Text(
                     $"{Convert.ToInt32(Duree.Hours)}:{Duree.Minutes.ToString().PadLeft(2, '0')}"
                 ).FontFamily("Times New Roman").FontSize(10);
+                if (mBold)
+                {
+                    component.Bold();
+                }
             }
         }
 
@@ -127,6 +138,13 @@ namespace GCPVConfig.Minute
             mCompetition = compe;
             mEvenements = evenements;
         }
+
+        public DocumentMetadata GetMetadata()
+        {
+            var metadata = DocumentMetadata.Default;
+            metadata.Title = mCompetition.Nom;
+            return metadata;
+        }
         public void Compose(IDocumentContainer container)
         {
             container.Page(page =>
@@ -146,6 +164,13 @@ namespace GCPVConfig.Minute
                     x.TotalPages().Style(style);
                 });
             });
+        }
+
+        private static string ToTitleCase(string str)
+        {
+            var firstword = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.Split(' ')[0].ToLower());
+            str = str.Replace(str.Split(' ')[0], firstword);
+            return str;
         }
 
         void ComposeContent(IContainer container)
@@ -172,6 +197,11 @@ namespace GCPVConfig.Minute
                         columns.RelativeColumn(60);
                         columns.RelativeColumn(60);
                     });
+                    CultureInfo culture = new CultureInfo("fr-CA");
+                    string date = mCompetition.Date.ToString("dddd d MMMM yyyy", culture);
+                    date = ToTitleCase(date);
+                    table.Cell().ColumnSpan(6).ValueCell().Element(Event.Block).Text(date)
+                        .FontFamily("Times New Roman").FontSize(10).Bold();
 
                     foreach (Event e in mEvenements)
                     {

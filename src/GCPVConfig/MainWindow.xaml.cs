@@ -19,7 +19,9 @@
 */
 using GCPVConfig.Minute;
 using Microsoft.Win32;
+using Octokit;
 using QuestPDF.Infrastructure;
+using Semver;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -66,6 +68,7 @@ namespace GCPVConfig
         private delegate void NoArgDelegate(IProgress<string> progress);
         private ObservableCollection<CourseTemps> EmployeeCollection = new ObservableCollection<CourseTemps>();
         private Config mConfig = null;
+        System.Windows.Threading.DispatcherTimer dispatcherTimer = null;
 
         public MainWindow()
         {
@@ -96,6 +99,36 @@ namespace GCPVConfig
             foreach (var typecompe in mConfig.TypeCompetition)
             {
                 this.combo_evenement_type.Items.Add(typecompe.Name);
+            }
+
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 3);
+            dispatcherTimer.Start();
+
+        }
+        private async void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            dispatcherTimer.Stop();
+            try
+            {
+                var client = new GitHubClient(new ProductHeaderValue("efficks_GCPVConfig"));
+                var latest = await client.Repository.Release.GetLatest("efficks", "GCPVConfig");
+                if (latest is not null)
+                {
+                    var currentVersion = SemVersion.Parse(Common.version());
+                    var gitVersion = SemVersion.Parse(latest.Name);
+                    if (gitVersion > currentVersion)
+                    {
+                        var w = new UpdateWindow(latest.HtmlUrl);
+                        w.Owner = Window.GetWindow(this);
+                        w.ShowDialog();
+                    }
+                }
+            }
+            catch(Exception)
+            {
+                // Ignore exception on update
             }
         }
 
@@ -196,6 +229,11 @@ namespace GCPVConfig
             btn_launchImport.IsEnabled = txt_patPath.Text.Length > 0 && txt_inscriptionPath.Text.Length > 0 && combo_evenement_type.SelectedValue != null && combo_competition_list.SelectedValue != null;
 
             btn_launchRegroupement.IsEnabled = txt_patPath.Text.Length > 0 && combo_evenement_type.SelectedValue != null && combo_competition_list.SelectedValue != null && combo_classement.SelectedValue != null;
+
+            if (btn_launchMinute != null)
+            {
+                btn_launchMinute.IsEnabled = txt_patPath.Text.Length > 0 && combo_evenement_type.SelectedValue != null && combo_competition_list.SelectedValue != null;
+            }
         }
 
         private void txt_patPath_TextChanged(object sender, TextChangedEventArgs e)
@@ -216,17 +254,28 @@ namespace GCPVConfig
             Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
 
             txt_log.Clear();
-            string inscriptionPath = txt_inscriptionPath.Text;
-            string patPath = txt_patPath.Text;
-            Importer importer = new Importer(inscriptionPath, patPath, mConfig, combo_evenement_type.SelectedItem.ToString());
-            importer.ProgressMessage = progressMessage;
-            importer.ConflictFound += ConflictFound;
-            importer.SelectCompetition += SelectCompetition;
-            importer.SelectClub += SelectClub;
-            await importer.Import();
+            try
+            {
 
-            btn_launchImport.IsEnabled = true;
-            Cursor = old_cursor;
+                string inscriptionPath = txt_inscriptionPath.Text;
+                string patPath = txt_patPath.Text;
+                Importer importer = new Importer(inscriptionPath, patPath, mConfig, combo_evenement_type.SelectedItem.ToString());
+                importer.ProgressMessage = progressMessage;
+                importer.ConflictFound += ConflictFound;
+                importer.SelectCompetition += SelectCompetition;
+                importer.SelectClub += SelectClub;
+                await importer.Import();
+            }
+            catch(Exception exception)
+            {
+                NewMessageReport("Une erreur est survenue durant l'importation.");
+                NewMessageReport(exception.ToString());
+            }
+            finally
+            {
+                btn_launchImport.IsEnabled = true;
+                Cursor = old_cursor;
+            }
         }
         private void NewMessageReport(string msg)
         {
@@ -313,6 +362,16 @@ namespace GCPVConfig
 
         private void btn_launchMinute_Click(object sender, RoutedEventArgs e)
         {
+            SaveFileDialog saveMinuteDialog = new SaveFileDialog();
+            saveMinuteDialog.Filter = "Fichier PDF (*.pdf)|*.pdf|Tous les fichiers (*.*)|*.*";
+            saveMinuteDialog.FileName = $"Horaire minuté - {((CompetitionComboItem)combo_competition_list.SelectedValue).Text}.pdf";
+            string savePath = "";
+            if (saveMinuteDialog.ShowDialog(this)==false)
+            {
+                return;
+            }
+            savePath = saveMinuteDialog.FileName;
+
             Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
             
             FichierPAT pat = FichierPAT.Open(txt_patPath.Text);
@@ -326,15 +385,15 @@ namespace GCPVConfig
                 DebutCourse = TimeOnly.Parse(txt_race_time.Text),
                 DureeResurfacage = TimeSpan.FromMinutes(Int32.Parse(txt_resurfacage_duration.Text)),
                 DureeDiner = TimeSpan.FromMinutes(Int32.Parse(txt_diner_time.Text)),
-                BlocAvantDiner = 3,
-                SecondesParTour = 16,
-                SecondesEntreeSortie = 60
+                BlocAvantDiner = Int32.Parse(txt_blocDiner.Text),
+                SecondesParTour = Int32.Parse(txt_secondes_tours.Text),
+                SecondesEntreeSortie = Int32.Parse(txt_temps_in_out.Text)
             };
 
             Minuteur m = new Minuteur(pat, ((CompetitionComboItem)combo_competition_list.SelectedValue).Value, parameters);
             m.ProgressMessage = progressMessage;
 
-            m.Generate();
+            m.Generate(savePath);
         }
 
         private void combo_evenement_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
