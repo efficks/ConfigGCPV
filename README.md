@@ -1,6 +1,9 @@
 # ConfigGCPV
 Outil d'aide au montage de compétition GCPV
 
+![Importation](res/importation.png)
+
+
 # License
 Copyright (C) 2023  François-Xavier Choinière
 
