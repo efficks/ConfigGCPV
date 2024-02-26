@@ -34,7 +34,7 @@ namespace GCPVConfig
     public class Inscription: IInscription
     {
         //First Name	Last Name	Sex	DOB	Calculated Age	Membership Numbers	Affiliates
-        public Inscription(string firstName, string lastName, IInscription.SexEnum sex, DateOnly birthDate, string? memberNumber, string club)
+        public Inscription(string firstName, string lastName, IInscription.SexEnum sex, DateOnly birthDate, string memberNumber, string club)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -48,7 +48,7 @@ namespace GCPVConfig
         public string LastName { get; }
         public IInscription.SexEnum Sex { get; }
         public DateOnly BirthDate { get; }
-        public string? MemberNumber { get; set; }
+        public string MemberNumber { get; set; }
         public string Club { get; set; }
 
         public int NoCasque { get; set; }
@@ -66,20 +66,27 @@ namespace GCPVConfig
 
         public class CsvEntry
         {
-            public string Affiliates { get; set; }
-            
+            private string dOB = "";
+            private string sex = "";
+            private string memberNumber = "";
+            private string lastName = "";
+            private string firstName = "";
+            private string affiliates = "";
+
+            public string Affiliates { get => affiliates; set => affiliates = value; }
+
             [Name("First Name")]
-            public string FirstName { get; set; }
+            public string FirstName { get => firstName; set => firstName = value; }
 
             [Name("Last Name")]
-            public string LastName { get; set; }
+            public string LastName { get => lastName; set => lastName = value; }
 
             [Name("Membership Numbers")]
-            public string MemberNumber { get; set; }
+            public string MemberNumber { get => memberNumber; set => memberNumber = value; }
 
-            public string Sex { get; set; }
+            public string Sex { get => sex; set => sex = value; }
 
-            public string DOB { get; set; }
+            public string DOB { get => dOB; set => dOB = value; }
         }
 
         public static List<Inscription> LoadInscription(string path)
@@ -93,7 +100,7 @@ namespace GCPVConfig
             {
                 return LoadFromCsv(path);
             }
-            return null;
+            throw new Exception("Format de fichier d'inscription non supporté");
         }
 
         private static List<Inscription> LoadFromCsv(string path)

@@ -20,11 +20,21 @@ namespace GCPVConfig
         public string MaxAge { get; set; }
 
         public bool Mixte { get; set; }
+
+        public Category()
+        {
+            Name = "";
+            MinAge = "0";
+            MaxAge = "99";
+            Mixte = false;
+        }
     }
 
     internal class TypeCompetition
     {
-        public string Name { get; set; }
+        private string name="";
+
+        public string Name { get => name; set => name = value; }
         [YamlMember(Alias = "numero_bonnet", ApplyNamingConventions = false)]
         public bool NumeroBonnet { get; set; }
 
@@ -36,12 +46,16 @@ namespace GCPVConfig
     }
     internal class Config
     {
-        public List<Category> Categories { get; set; }
+        private List<Category> categories = new List<Category>();
+        private List<TypeCompetition> typeCompetition = new List<TypeCompetition>();
+        private string division = "";
+
+        public List<Category> Categories { get => categories; set => categories = value; }
 
         [YamlMember(Alias = "typecompetition", ApplyNamingConventions = false)]
-        public List<TypeCompetition> TypeCompetition { get; set; }
+        public List<TypeCompetition> TypeCompetition { get => typeCompetition; set => typeCompetition = value; }
 
-        public string Division { get; set; }
+        public string Division { get => division; set => division = value; }
 
         public static Config load(string config_path)
         {
@@ -55,16 +69,9 @@ namespace GCPVConfig
             }
         }
 
-        public TypeCompetition GetTypeConfig(string typename)
+        public TypeCompetition? GetTypeConfig(string typename)
         {
-            foreach(TypeCompetition t in TypeCompetition)
-            {
-                if(t.Name == typename)
-                {
-                    return t;
-                }
-            }
-            return null;
+            return TypeCompetition.Find(t => t.Name == typename);
         }
     }
 }

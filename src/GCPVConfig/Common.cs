@@ -48,10 +48,16 @@ namespace GCPVConfig
     {
         public static string version()
         {
-            string infoVersion = Assembly.GetExecutingAssembly()?
-              .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-              .InformationalVersion;
-            return infoVersion;
+            var assembly = Assembly.GetExecutingAssembly();
+            if (assembly is not null)
+            {
+                var attr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                if (attr is not null)
+                {
+                    return attr.InformationalVersion;
+                }
+            }
+            return "";
         }
     }
 }

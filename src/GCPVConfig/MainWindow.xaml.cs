@@ -34,14 +34,20 @@ namespace GCPVConfig
 {
     public class CourseTemps
     {
-        public string Distance { get; set; }
-        public string Secondes { get; set; }
+        private string distance = "";
+        private string secondes = "";
+
+        public string Distance { get => distance; set => distance = value; }
+        public string Secondes { get => secondes; set => secondes = value; }
     }
 
     public class ClassementComboItem
     {
-        public string Text { get; set; }
-        public string Value { get; set; }
+        private string text = "";
+        private string mValue = "";
+
+        public string Text { get => text; set => text = value; }
+        public string Value { get => mValue; set => mValue = value; }
 
         public override string ToString()
         {
@@ -51,8 +57,16 @@ namespace GCPVConfig
 
     public class CompetitionComboItem
     {
-        public string Text { get; set; }
+        private string text;
+
+        public string Text { get => text; set => text = value; }
         public FichierPAT.Competition Value { get; set; }
+
+        public CompetitionComboItem(FichierPAT.Competition value)
+        {
+            text = value.Nom;
+            Value = value;
+        }
 
         public override string ToString()
         {
@@ -67,8 +81,8 @@ namespace GCPVConfig
     {
         private delegate void NoArgDelegate(IProgress<string> progress);
         private ObservableCollection<CourseTemps> EmployeeCollection = new ObservableCollection<CourseTemps>();
-        private Config mConfig = null;
-        System.Windows.Threading.DispatcherTimer dispatcherTimer = null;
+        private Config mConfig;
+        System.Windows.Threading.DispatcherTimer dispatcherTimer;
 
         public MainWindow()
         {
@@ -82,7 +96,14 @@ namespace GCPVConfig
             try
             {
                 string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                string strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+                string? strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+                if(strWorkPath is null)
+                {
+                    MessageBox.Show("Erreur d'ouverture du fichier de configuration. Impossible d'utiliser GetDirectoryName",
+                        "Erreur de configuration",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    throw new Exception();
+                }
 
                 string configPath = Path.Combine(strWorkPath, "GCPVConfig.yaml");
 
@@ -107,7 +128,7 @@ namespace GCPVConfig
             dispatcherTimer.Start();
 
         }
-        private async void dispatcherTimer_Tick(object sender, EventArgs e)
+        private async void dispatcherTimer_Tick(object? sender, EventArgs e)
         {
             dispatcherTimer.Stop();
             try
@@ -116,9 +137,9 @@ namespace GCPVConfig
                 var latest = await client.Repository.Release.GetLatest("efficks", "GCPVConfig");
                 if (latest is not null)
                 {
-                    var currentVersion = SemVersion.Parse(Common.version());
-                    var gitVersion = SemVersion.Parse(latest.Name);
-                    if (gitVersion > currentVersion)
+                    var currentVersion = SemVersion.Parse(Common.version(), SemVersionStyles.Any);
+                    var gitVersion = SemVersion.Parse(latest.Name, SemVersionStyles.Any);
+                    if (currentVersion.ComparePrecedenceTo(gitVersion) == -1)
                     {
                         var w = new UpdateWindow(latest.HtmlUrl);
                         w.Owner = Window.GetWindow(this);
@@ -132,9 +153,14 @@ namespace GCPVConfig
             }
         }
 
-        private void DG1_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        /*private void DG1_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            string headername = e.Column.Header.ToString();
+            string? headername = e.Column.Header.ToString();
+
+            if(headername is null)
+            {
+
+            }
 
             //Cancel the column you don't want to generate
             if (headername == "MiddleName")
@@ -155,7 +181,7 @@ namespace GCPVConfig
             {
                 e.Column.Header = "Email";
             }
-        }
+        }*/
 
         private void btn_openInscription_Click(object sender, RoutedEventArgs e)
         {
@@ -190,7 +216,7 @@ namespace GCPVConfig
 
                         foreach (var compe in competitions)
                         {
-                            combo_competition_list.Items.Add(new CompetitionComboItem
+                            combo_competition_list.Items.Add(new CompetitionComboItem(compe)
                             {
                                 Text = compe.Nom,
                                 Value = compe
@@ -253,13 +279,19 @@ namespace GCPVConfig
             Cursor = Cursors.Wait;
             Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
 
+            if(combo_evenement_type.SelectedItem is null)
+            {
+                NewMessageReport("Aucun type d'événement sélectionné");
+                return;
+            }
+
             txt_log.Clear();
             try
             {
 
                 string inscriptionPath = txt_inscriptionPath.Text;
                 string patPath = txt_patPath.Text;
-                Importer importer = new Importer(inscriptionPath, patPath, mConfig, combo_evenement_type.SelectedItem.ToString());
+                Importer importer = new Importer(inscriptionPath, patPath, mConfig, (string)combo_evenement_type.SelectedItem);
                 importer.ProgressMessage = progressMessage;
                 importer.ConflictFound += ConflictFound;
                 importer.SelectCompetition += SelectCompetition;
@@ -414,10 +446,18 @@ namespace GCPVConfig
 
             Progress<string> progressMessage = new Progress<string>(msg => NewMessageReport(msg));
 
+
             txt_log.Clear();
             string inscriptionPath = txt_inscriptionPath.Text;
             string patPath = txt_patPath.Text;
-            Importer importer = new Importer(inscriptionPath, patPath, mConfig, combo_evenement_type.SelectedItem.ToString());
+
+            if (combo_evenement_type.SelectedItem is null)
+            {
+                NewMessageReport("Auncun type d'événement sélectionné");
+                return;
+            }
+
+            Importer importer = new Importer(inscriptionPath, patPath, mConfig, (string)combo_evenement_type.SelectedItem);
             importer.ProgressMessage = progressMessage;
             importer.ConflictFound += ConflictFound;
             importer.SelectCompetition += SelectCompetition;
