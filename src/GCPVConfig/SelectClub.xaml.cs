@@ -42,7 +42,11 @@ namespace GCPVConfig
         public class ClubComboItem
         {
             public string Text { get; set; }
-            public FichierPAT.Club Value { get; set; }
+            public FichierPAT.Club? Value { get; set; }
+
+            public ClubComboItem() {
+                Text = "";
+            }
 
             public override string ToString()
             {

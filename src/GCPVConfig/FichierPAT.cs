@@ -103,7 +103,7 @@ namespace GCPVConfig
             public string LastName { get; set; }
             public IInscription.SexEnum Sex { get; set; }
             public DateOnly BirthDate { get; set; }
-            public string? MemberNumber { get; set; }
+            public string MemberNumber { get; set; }
             public string Club { get; set; }
             public int NoCategory { get; set; }
 
@@ -301,7 +301,7 @@ namespace GCPVConfig
             return patineurs;
         }
 
-        public string GetCategoryNom(int numerocat)
+        public string? GetCategoryNom(int numerocat)
         {
             using (var conn = GetConnection())
             {
@@ -309,7 +309,7 @@ namespace GCPVConfig
                 OleDbCommand cmd = new OleDbCommand(@"SELECT TOP 1 Nom FROM TCategorie WHERE NoCategorie=@nocat", conn);
 
                 cmd.Parameters.AddWithValue("@nocat", numerocat);
-                return (string)cmd.ExecuteScalar();
+                return (string?)cmd.ExecuteScalar();
             }
         }
 
@@ -524,10 +524,16 @@ namespace GCPVConfig
                 }
                 {
                     var cmd = new OleDbCommand("SELECT @@identity;", conn);
-                    int nopat = (int)cmd.ExecuteScalar();
-
-                    Patineur newPat = new Patineur(nopat, inscription.FirstName, inscription.LastName, inscription.Sex, inscription.BirthDate, inscription.MemberNumber, inscription.Club, nocat, this);
-                    patineurs.Add(newPat.MemberNumber, newPat);
+                    int? nopat = (int?)cmd.ExecuteScalar();
+                    if (nopat is not null)
+                    {
+                        Patineur newPat = new Patineur((int)nopat, inscription.FirstName, inscription.LastName, inscription.Sex, inscription.BirthDate, inscription.MemberNumber, inscription.Club, nocat, this);
+                        patineurs.Add(newPat.MemberNumber, newPat);
+                    }
+                    else
+                    {
+                        throw new Exception("Erreur en ajoutant un patineur");
+                    }
                 }
             }
         }
@@ -628,7 +634,7 @@ namespace GCPVConfig
             }
         }
 
-        internal List<string> GetCompetiteurs(Competition? competitionToImport)
+        internal List<string> GetCompetiteurs(Competition competitionToImport)
         {
             using (var conn = GetConnection())
             {
@@ -770,14 +776,23 @@ namespace GCPVConfig
 
         internal class Course
         {
-            public int Sequence { get; set; }
-            public string Groupe { get; set; }
-            public string CritereQualif { get; set; }
-            public int NbPatineur { get; set; }
-            public int NbVagues { get; set; }
-            public int LongueurEpruve { get; set; }
-            public int NoBloc { get; set; }
-            public bool EstQualif { get; set; }
+            private string groupe = "";
+            private int sequence;
+            private string critereQualif = "";
+            private int nbPatineur;
+            private int nbVagues;
+            private int longueurEpruve;
+            private int noBloc;
+            private bool estQualif;
+
+            public int Sequence { get => sequence; set => sequence = value; }
+            public string Groupe { get => groupe; set => groupe = value; }
+            public string CritereQualif { get => critereQualif; set => critereQualif = value; }
+            public int NbPatineur { get => nbPatineur; set => nbPatineur = value; }
+            public int NbVagues { get => nbVagues; set => nbVagues = value; }
+            public int LongueurEpruve { get => longueurEpruve; set => longueurEpruve = value; }
+            public int NoBloc { get => noBloc; set => noBloc = value; }
+            public bool EstQualif { get => estQualif; set => estQualif = value; }
         }
 
         internal List<Course> GetProgrammeCourse(int noCompet)

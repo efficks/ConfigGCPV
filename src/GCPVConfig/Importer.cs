@@ -35,8 +35,18 @@ namespace GCPVConfig
     internal class ConflictFoundEventArgs : EventArgs
     {
         private ManualResetEvent mre = new ManualResetEvent(false);
-        public Inscription? Inscription { get; set; }
-        public Patineur? Patineur { get; set; }
+        private Inscription mInscription;
+
+        public ConflictFoundEventArgs(Inscription inscription, Patineur patineur)
+        {
+            this.mInscription = inscription;
+            this.mPatineur = patineur;
+        }
+
+        private Patineur mPatineur;
+
+        public Inscription Inscription { get => mInscription; set => mInscription = value; }
+        public Patineur Patineur { get => mPatineur; set => mPatineur = value; }
         public Importer.ConflictAction UserAction { get; set; }
         public ManualResetEvent MRE
         {
@@ -110,11 +120,7 @@ namespace GCPVConfig
         }
         protected ConflictAction OnConflictDetected(Inscription i, Patineur p)
         {
-            ConflictFoundEventArgs e = new ConflictFoundEventArgs
-            {
-                Inscription = i,
-                Patineur = p
-            };
+            ConflictFoundEventArgs e = new ConflictFoundEventArgs(i, p);
             ConflictFound?.Invoke(this, e);
             e.MRE.WaitOne();
             return e.UserAction;
@@ -143,9 +149,9 @@ namespace GCPVConfig
             return e.Choice;
         }
 
-        public event ConflictFoundEventHandler ConflictFound;
-        public event SelectCompetitionEventHandler SelectCompetition;
-        public event SelectClubEventHandler SelectClub;
+        public event ConflictFoundEventHandler? ConflictFound = null;
+        public event SelectCompetitionEventHandler? SelectCompetition = null;
+        public event SelectClubEventHandler? SelectClub = null;
 
         private string mInscriptionPath;
         private string mPATPath;
@@ -237,7 +243,12 @@ namespace GCPVConfig
                 }
 
                 var typeCompeConfig = mConfiguration.GetTypeConfig(mTypeCompetitionName);
-                if (typeCompeConfig.NumeroBonnet)
+                if (typeCompeConfig is null)
+                {
+                    ProgressMessage?.Report("Erreur : Impossible de trouver la configuration du type de compétition");
+                    throw new Exception("Impossible de trouver la configuration du type de compétition");
+                }
+                else if (typeCompeConfig.NumeroBonnet)
                 {
                     inscriptions.Sort((ins1, ins2) => ins1.Club.CompareTo(ins2.Club));
                     int nocasque = 1;
@@ -269,7 +280,15 @@ namespace GCPVConfig
                 }
 
                 pat.FixPatineurCategories();
-                Inscrire(inscriptions, pat);
+                try
+                {
+                    Inscrire(inscriptions, pat);
+                }
+                catch(Exception e)
+                {
+                    ProgressMessage?.Report("Erreur lors de l'inscription");
+                    ProgressMessage?.Report(e.ToString());
+                }
             });
 
             ProgressMessage?.Report("Fin de l'importation");
@@ -284,9 +303,18 @@ namespace GCPVConfig
             {
                 pat.ClearInscription(competitionToImport);
 
-                foreach (var inscription in inscriptions)
+                foreach (Inscription inscription in inscriptions)
                 {
+                    if(inscription.MemberNumber is null)
+                    {
+                        throw new Exception("Une inscription a un numéro de membre vide");
+                    }
                     var patineur = pat.GetPatineurByNoMembre(inscription.MemberNumber);
+
+                    if(patineur is null)
+                    {
+                        throw new Exception(String.Format("Aucun patineur n'existe avec le numéro {0}", inscription.MemberNumber));
+                    }
                     pat.Inscrire(patineur, competitionToImport, mConfiguration.Division, inscription.NoCasque);
                 }
             }
@@ -426,15 +454,34 @@ namespace GCPVConfig
                 }
 
                 var typeCompeConfig = mConfiguration.GetTypeConfig(mTypeCompetitionName);
+                if(typeCompeConfig is null)
+                {
+                    ProgressMessage?.Report(String.Format("ERREUR : Impossible de réupérer la configuration pour le type de compétition {0}",mTypeCompetitionName));
+                    return;
+                }
+
                 var competitions = pat.GetCompetitions();
-                Competition competitionToImport = OnSelectCompetition(competitions);
+                Competition? competitionToImport = OnSelectCompetition(competitions);
+                if(competitionToImport is null)
+                {
+                    ProgressMessage?.Report("ERREUR : Aucune compétition slectionnée");
+                    return;
+                }
 
                 List<string> competiteursId = pat.GetCompetiteurs(competitionToImport);
 
                 List<Patineur> competiteurs = new List<Patineur>();
                 foreach (string id in competiteursId)
                 {
-                    competiteurs.Add(pat.GetPatineurByNoMembre(id));
+                    Patineur? patineur = pat.GetPatineurByNoMembre(id);
+
+                    if (patineur is null)
+                    {
+                        ProgressMessage?.Report(String.Format("ERREUR : Impossible de trouver le patineur numéro {0}",id));
+                        return;
+                    }
+
+                    competiteurs.Add(patineur);
                 }
 
                 Dictionary<string, bool> configCategoryMixte = new Dictionary<string, bool>();
@@ -448,6 +495,11 @@ namespace GCPVConfig
                 foreach(Patineur patineur in competiteurs)
                 {
                     var groupname = pat.GetCategoryNom(patineur.NoCategory);
+                    if(groupname is null)
+                    {
+                        ProgressMessage?.Report("ERREUR : Impossible de trouver la catégorie d'un patineur");
+                        return;
+                    }
                     string gr1 = groupname;
                     groupname += " gr. {0}";
                     if (!configCategoryMixte[gr1]) //non-mixte
@@ -464,8 +516,6 @@ namespace GCPVConfig
 
                 Dictionary<string, List<Patineur>> groups = new Dictionary<string, List<Patineur>>();
 
-                
-
                 foreach (string categoryname in patineurParCategoye.Keys)
                 {
                     List<Patineur> currentGroup = new List<Patineur>();
@@ -479,8 +529,6 @@ namespace GCPVConfig
 
                     while(patineurcategory.Count > 0)
                     {
-                        
-
                         if(currentGroup.Count >= typeCompeConfig.MaxPatineur && patineurcategory.Count >= typeCompeConfig.MinPatineurDerniere)
                         {
                             ProgressMessage?.Report(String.Format("Ajout du groupe {0} - {1} patineurs", currentGroupName, currentGroup.Count));
