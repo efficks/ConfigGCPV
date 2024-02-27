@@ -1,8 +1,13 @@
 # ConfigGCPV
 Outil d'aide au montage de compétition GCPV
 
+[Manuel d'instruction](aide.md)
+
 ![Importation](res/importation.png)
 
+## Installation
+1. Téléchargez la dernière version du package MSI
+1. Installer le fichier MSI
 
 # License
 Copyright (C) 2023  François-Xavier Choinière
