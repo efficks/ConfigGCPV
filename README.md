@@ -1,7 +1,7 @@
 # ConfigGCPV
 Outil d'aide au montage de compétition GCPV
 
-[Manuel d'instruction](aide.md)
+[Manuel d'instruction](src/GCPVConfig/aide.md)
 
 ![Importation](res/importation.png)
 

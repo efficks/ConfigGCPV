@@ -3,8 +3,8 @@
 GCPV Config version {{ version }}
 
 Cet outil permet de charger des inscriptions produites par le système IceReg en
-format XLSX et de les intégrer dans une compétiton contenu dans un fichier PAT.
-Pour bien fonctionner, vos fichier doivent répondrent à certains critères.
+format CSV ou Excel(XLSX) et de les intégrer dans une compétiton contenu dans un fichier PAT.
+Pour bien fonctionner, vos fichiers Excel doivent répondrent à certains critères. Les fichiers CSV peuvent être importés sans changement.
 
 ### Fichier PAT
 1. La compétition de destination doit déjà exister dans le fichier PAT.
