@@ -515,10 +515,10 @@ namespace GCPVConfig
                         new OleDbParameter("@nom", inscription.LastName.ToUpper()),
                         new OleDbParameter("@dob", inscription.BirthDate.ToDateTime(new TimeOnly(0,0,0))),
                         new OleDbParameter("@sexe", inscription.Sex==IInscription.SexEnum.Male?"M":"F"),
+                        new OleDbParameter("@division", division),
                         new OleDbParameter("@nocat", nocat),
                         new OleDbParameter("@noclub", GetNoClub(inscription.Club)),
                         new OleDbParameter("@codepat", inscription.MemberNumber),
-                        new OleDbParameter("@division", division)
                     });
                     cmd.ExecuteNonQuery();
                 }

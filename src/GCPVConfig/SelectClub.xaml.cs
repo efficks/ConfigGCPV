@@ -79,7 +79,14 @@ namespace GCPVConfig
 
         private void btn_ok_Click(object sender, RoutedEventArgs e)
         {
-            choice = ((ClubComboItem)list_clubs.SelectedItem).Value;
+            if (list_clubs.SelectedItem != null)
+            {
+                choice = ((ClubComboItem)list_clubs.SelectedItem).Value;
+            }
+            else
+            {
+                choice = null;
+            }
             this.DialogResult = true;
         }
 
@@ -104,7 +111,14 @@ namespace GCPVConfig
 
         private void list_clubs_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            choice = ((ClubComboItem)list_clubs.SelectedItem).Value;
+            if (list_clubs.SelectedItem != null)
+            {
+                choice = ((ClubComboItem)list_clubs.SelectedItem).Value;
+            }
+            else
+            {
+                choice = null;
+            }
             this.DialogResult = true;
         }
     }

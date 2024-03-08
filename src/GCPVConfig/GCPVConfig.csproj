@@ -38,7 +38,7 @@
     <Platforms>x64;x86</Platforms>
 	<WarningLevel>6</WarningLevel>
 	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	<VersionPrefix>1.2.2</VersionPrefix>
+	<VersionPrefix>1.2.3</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

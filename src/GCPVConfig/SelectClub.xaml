@@ -33,7 +33,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock x:Name="txtMessage" TextWrapping="Wrap" Grid.Row="0" Margin="5,5,5,5"><Run Language="fr-ca" Text="&lt;message&gt;"/></TextBlock>
-        <ListBox x:Name="list_clubs" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="list_competitions_SelectionChanged" Margin="5,5,5,5" MouseDoubleClick="list_clubs_MouseDoubleClick" />
+        <ListBox x:Name="list_clubs" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="list_competitions_SelectionChanged" Margin="5,5,5,5" />
         <Grid Grid.Row="2" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
