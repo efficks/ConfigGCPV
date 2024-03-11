@@ -339,11 +339,9 @@ namespace GCPVConfig
 
         private static Regex REGEX_PATINEUR_BAD_STARTS = new Regex(@"^(\d+)\s*(.+)$");
         private static Regex REGEX_PATINEUR_END_NUMBER = new Regex(@"^(.+)\s+(\(\d+\))$");
-        public async void FixPatineurNom()
+        public void FixPatineurNom()
         {
-            List<Patineur> patineurs = await GetAllPatineurs();
-
-            foreach(var patineur in patineurs)
+            foreach(Patineur patineur in AllPatineursDict.Values)
             {
                 bool changed = false;
                 Match m = REGEX_PATINEUR_BAD_STARTS.Match(patineur.LastName);

@@ -57,13 +57,14 @@ namespace GCPVConfig
         private FichierPAT.Club? choice;
         public SelectClub(List<FichierPAT.Club> clubs, string club_inconnu)
         {
+
             InitializeComponent();
             list_clubs.Items.Clear();
-            foreach(FichierPAT.Club club in clubs)
+            foreach(FichierPAT.Club club in clubs.OrderBy(c => c.Name))
             {
                 ClubComboItem item = new ClubComboItem
                 {
-                    Text = club.Name,
+                    Text = String.Format("{0} ({1})", club.Name, club.Abreviation),
                     Value = club
                 };
                 list_clubs.Items.Add(item);
